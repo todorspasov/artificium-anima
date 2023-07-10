@@ -9,7 +9,9 @@ import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.service.OpenAiService;
 import com.tspasov.artificiumanima.tokens.TokenService;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class ChatGptServiceImpl implements ChatGptService {
 
@@ -25,13 +27,18 @@ public class ChatGptServiceImpl implements ChatGptService {
   @Override
   public String askQuestion(String question) {
     final ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), question);
-    ChatCompletionRequest chatCompletionRequest =
-        ChatCompletionRequest.builder().model(CHAT_GPT_ENGINE).messages(Arrays.asList(systemMessage)).n(1).maxTokens(50)
-            .logitBias(new HashMap<>()).build();
+    ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest.builder()
+        .model(CHAT_GPT_ENGINE).messages(Arrays.asList(systemMessage)).n(1).maxTokens(50)
+        .logitBias(new HashMap<>()).build();
 
-    final ChatMessage responseMessage = this.openAiService.createChatCompletion(chatCompletionRequest).getChoices()
-        .iterator().next().getMessage();
-
-    return responseMessage.getContent();
+    try {
+      final ChatMessage responseMessage = this.openAiService
+          .createChatCompletion(chatCompletionRequest).getChoices().iterator().next().getMessage();
+      return responseMessage.getContent();
+    } catch (RuntimeException e) {
+      final String timeoutMessage = "Could not get an answer, timed out!";
+      log.error(timeoutMessage);
+      return timeoutMessage;
+    }
   }
 }
