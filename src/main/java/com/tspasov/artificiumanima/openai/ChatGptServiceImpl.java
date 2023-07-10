@@ -45,7 +45,7 @@ public class ChatGptServiceImpl implements ChatGptService {
       return responseMessage.getContent();
     } catch (RuntimeException e) {
       final String timeoutMessage = "Could not get an answer, timed out!";
-      log.error(timeoutMessage);
+      log.error(timeoutMessage, e);
       return timeoutMessage;
     }
   }

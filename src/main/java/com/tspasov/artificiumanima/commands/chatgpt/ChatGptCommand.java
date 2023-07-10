@@ -27,7 +27,7 @@ public class ChatGptCommand implements Command<MessageChannel> {
     // get response, and then paste it in discord
     final String answer = chatGptService.askQuestion(commandStr);
     channel.sendMessage(String.format("Artificial oracle answered: %s", answer)).queue();
-    final List<String> images = chatGptService.createImage(commandStr);
+    final List<String> images = chatGptService.createImage(String.join(".", commandStr, answer));
     final String imagesRef = CollectionUtils.emptyIfNull(images).stream().collect(Collectors.joining(", "));
     channel.sendMessage(String.format("GPT created images: %s", imagesRef)).queue();
   }
