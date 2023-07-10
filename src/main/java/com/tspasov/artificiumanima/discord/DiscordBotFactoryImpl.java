@@ -1,9 +1,9 @@
-package com.tspasov.artificiumanima.api.discord;
+package com.tspasov.artificiumanima.discord;
 
 import java.util.EnumSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.tspasov.artificiumanima.api.tokens.TokenService;
+import com.tspasov.artificiumanima.tokens.TokenService;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;

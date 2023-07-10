@@ -1,4 +1,4 @@
-package com.tspasov.artificiumanima.api.openai;
+package com.tspasov.artificiumanima.openai;
 
 import java.util.ArrayList;
 import java.util.HashMap;

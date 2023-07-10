@@ -1,4 +1,4 @@
-package com.tspasov.artificiumanima.api.discord;
+package com.tspasov.artificiumanima.discord;
 
 import net.dv8tion.jda.api.JDA;
 

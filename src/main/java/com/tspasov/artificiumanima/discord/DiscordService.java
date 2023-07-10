@@ -1,4 +1,4 @@
-package com.tspasov.artificiumanima.api.discord;
+package com.tspasov.artificiumanima.discord;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

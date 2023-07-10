@@ -1,4 +1,4 @@
-package com.tspasov.artificiumanima.api.tokens;
+package com.tspasov.artificiumanima.tokens;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
