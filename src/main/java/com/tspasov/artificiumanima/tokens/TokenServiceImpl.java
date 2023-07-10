@@ -9,7 +9,7 @@ public class TokenServiceImpl implements TokenService {
 
   private final String gptToken;
   private final String discordBotToken;
-  
+
   @Autowired
   public TokenServiceImpl(@Value("${gpt.token}") String gptToken,
       @Value("${discord.bot.token}") String discordBotToken) {
