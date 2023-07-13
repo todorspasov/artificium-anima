@@ -1,8 +1,9 @@
-package com.tspasov.artificiumanima.openai;
+package com.tspasov.artificiumanima.service;
 
 import java.util.List;
 
-public interface ChatGptService {
+public interface AIService {
   String askQuestion(String question);
+
   List<String> createImage(String text);
 }

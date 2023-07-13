@@ -1,4 +1,4 @@
-package com.tspasov.artificiumanima.discord;
+package com.tspasov.artificiumanima.service.discord;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

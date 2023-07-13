@@ -8,10 +8,10 @@ import com.tspasov.artificiumanima.commands.Command;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
 @Component
-public class CommandRegistryImpl extends AbstractCommandRegistry<MessageChannel> {
+public class DiscordCommandRegistryImpl extends AbstractCommandRegistry<MessageChannel> {
 
   @Autowired
-  public CommandRegistryImpl(List<Command<MessageChannel>> discordCommands) {
+  public DiscordCommandRegistryImpl(List<Command<MessageChannel>> discordCommands) {
     super(discordCommands);
   }
 }

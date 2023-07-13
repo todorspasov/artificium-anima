@@ -1,12 +1,9 @@
-package com.tspasov.artificiumanima.commands.chatgpt;
+package com.tspasov.artificiumanima.commands.openai;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.tspasov.artificiumanima.commands.Command;
-import com.tspasov.artificiumanima.openai.ChatGptService;
+import com.tspasov.artificiumanima.service.AIService;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
 @Component
@@ -14,10 +11,10 @@ public class ChatGptCommand implements Command<MessageChannel> {
 
   private static final String CHATGPT_COMMAND_KEY = "!chatgpt";
 
-  private final ChatGptService chatGptService;
+  private final AIService chatGptService;
 
   @Autowired
-  public ChatGptCommand(ChatGptService chatGptService) {
+  public ChatGptCommand(AIService chatGptService) {
     this.chatGptService = chatGptService;
   }
 
@@ -27,9 +24,6 @@ public class ChatGptCommand implements Command<MessageChannel> {
     // get response, and then paste it in discord
     final String answer = chatGptService.askQuestion(commandStr);
     channel.sendMessage(String.format("Artificial oracle answered: %s", answer)).queue();
-    final List<String> images = chatGptService.createImage(String.join(".", commandStr, answer));
-    final String imagesRef = CollectionUtils.emptyIfNull(images).stream().collect(Collectors.joining(", "));
-    channel.sendMessage(String.format("GPT created images: %s", imagesRef)).queue();
   }
 
   @Override

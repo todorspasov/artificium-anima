@@ -1,4 +1,4 @@
-package com.tspasov.artificiumanima.tokens;
+package com.tspasov.artificiumanima.service.tokens;
 
 public interface TokenService {
 

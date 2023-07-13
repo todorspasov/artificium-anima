@@ -12,8 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class AbstractCommandRegistry<T> implements CommandRegistry<T> {
-  private static final Pattern COMMAND_PATTERN = Pattern.compile("^(\\S+)\\s+(.*?)(?:\\s+)?$");
-
+  private static final Pattern COMMAND_PATTERN = Pattern.compile("^(!\\S+)\\s+([\\S\\s]+)");
   protected Map<String, List<Command<T>>> registry;
 
   protected AbstractCommandRegistry(List<Command<T>> commands) {
