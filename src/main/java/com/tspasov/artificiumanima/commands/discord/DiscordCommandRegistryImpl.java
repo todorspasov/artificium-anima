@@ -5,13 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.tspasov.artificiumanima.commands.AbstractCommandRegistry;
 import com.tspasov.artificiumanima.commands.Command;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.Message;
 
 @Component
-public class DiscordCommandRegistryImpl extends AbstractCommandRegistry<MessageChannel> {
+public class DiscordCommandRegistryImpl extends AbstractCommandRegistry<Message> {
 
   @Autowired
-  public DiscordCommandRegistryImpl(List<Command<MessageChannel>> discordCommands) {
+  public DiscordCommandRegistryImpl(List<Command<Message>> discordCommands) {
     super(discordCommands);
   }
 }

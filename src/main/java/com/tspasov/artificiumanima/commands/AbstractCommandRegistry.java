@@ -28,7 +28,7 @@ public class AbstractCommandRegistry<T> implements CommandRegistry<T> {
   }
 
   @Override
-  public void onCommandReceived(String command, T channel) {
+  public void onCommandReceived(String command, T message) {
     if (StringUtils.isNotBlank(command)) {
       final Matcher m = COMMAND_PATTERN.matcher(command);
       if (m.find()) {
@@ -38,7 +38,7 @@ public class AbstractCommandRegistry<T> implements CommandRegistry<T> {
         log.info("Found {} commands to match command '{}'. Passing arguments '{}'.",
             CollectionUtils.emptyIfNull(commands).size(), commandKey, commandArgs);
         CollectionUtils.emptyIfNull(commands).stream()
-            .forEach(cmd -> cmd.execute(commandArgs, channel));
+            .forEach(cmd -> cmd.execute(commandArgs, message));
       } else {
         log.info("No command available to serve: {}", command);
       }

@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.tspasov.artificiumanima.commands.CommandRegistry;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -12,10 +12,10 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 @Component
 public class DiscordListener extends ListenerAdapter {
 
-  private final CommandRegistry<MessageChannel> commandRegistry;
+  private final CommandRegistry<Message> commandRegistry;
 
   @Autowired
-  public DiscordListener(CommandRegistry<MessageChannel> commandRegistry) {
+  public DiscordListener(CommandRegistry<Message> commandRegistry) {
     this.commandRegistry = commandRegistry;
   }
 
@@ -26,6 +26,10 @@ public class DiscordListener extends ListenerAdapter {
     log.info("Received message from '{}' in channel '{}', channel type '{}', contents: '{}'",
         event.getAuthor().getName(), event.getChannel().getName(), event.getChannel().getType(),
         contentRaw);
-    this.commandRegistry.onCommandReceived(contentRaw, event.getChannel());
+    if (!event.getAuthor().isBot()) {
+      this.commandRegistry.onCommandReceived(contentRaw, event.getMessage());
+    } else {
+      log.info("Skipping processing message as it is from bot: {}", event.getAuthor().getName());
+    }
   }
 }

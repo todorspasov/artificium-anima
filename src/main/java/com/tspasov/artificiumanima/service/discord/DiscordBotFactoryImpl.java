@@ -19,6 +19,8 @@ public class DiscordBotFactoryImpl implements DiscordBotFactory {
       GatewayIntent.DIRECT_MESSAGES,
       // Enables access to message.getContentRaw()
       GatewayIntent.MESSAGE_CONTENT,
+      // Enables access to message.getMember().getVoiceState()
+      GatewayIntent.GUILD_VOICE_STATES,
       // Enables MessageReactionAddEvent for guild
       GatewayIntent.GUILD_MESSAGE_REACTIONS,
       // Enables MessageReactionAddEvent for private channels
@@ -37,7 +39,7 @@ public class DiscordBotFactoryImpl implements DiscordBotFactory {
   public JDA createBot() {
     final String token = this.tokenService.getDiscordBotToken();
     final JDA jda =
-        JDABuilder.createLight(token, BOT_INTENTS).addEventListeners(discordListener).build();
+        JDABuilder.create(token, BOT_INTENTS).addEventListeners(discordListener).build();
     log.info(
         "Successfully created a discord bot with id '{}', name '{}' having the following intents: {}",
         jda.getSelfUser().getId(), jda.getSelfUser().getName(), BOT_INTENTS);

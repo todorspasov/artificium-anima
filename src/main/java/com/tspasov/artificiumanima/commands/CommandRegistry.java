@@ -6,7 +6,7 @@ public interface CommandRegistry<T> {
 
   void registerCommandAction(Command<T> command);
 
-  void onCommandReceived(String command, T channel);
+  void onCommandReceived(String command, T message);
 
   Map<String, String> getCommandsInfo();
 }

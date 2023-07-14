@@ -1,5 +1,6 @@
 package com.tspasov.artificiumanima.service.openai;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import com.theokanning.openai.audio.CreateTranscriptionRequest;
+import com.theokanning.openai.audio.TranscriptionResult;
 import com.theokanning.openai.completion.chat.ChatCompletionChoice;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
@@ -81,5 +84,16 @@ public class OpenAIServiceImpl implements AIService {
     final ImageResult imageResult = this.openAiService.createImage(imageRequest);
     log.info("Image result: {}", imageResult.toString());
     return imageResult.getData().stream().map(Image::getUrl).collect(Collectors.toList());
+  }
+  
+  @Override
+  public String transcribeAudio(File file) {
+    CreateTranscriptionRequest transcriptionRequest = CreateTranscriptionRequest.builder()
+        .language("en")
+        .model("whisper-1")
+        .build();
+    final TranscriptionResult transcription = this.openAiService.createTranscription(transcriptionRequest, file);
+    log.info("Got the following answer: {}", transcription.getText());
+    return transcription.getText();
   }
 }
