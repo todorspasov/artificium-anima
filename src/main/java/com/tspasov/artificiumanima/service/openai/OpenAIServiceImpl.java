@@ -1,6 +1,5 @@
 package com.tspasov.artificiumanima.service.openai;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class OpenAIServiceImpl implements AIService {
 
   private static final String GPT_3_5_ENGINE = "gpt-3.5-turbo-16k";
-  private static final int MAX_TOKENS = 3*4000;
+  private static final int MAX_TOKENS = 3 * 4000;
   private static final int CHAT_RESPONSE_COUNT = 1;
 
   private static final String IMAGE_SIZE = "256x256";
@@ -44,21 +43,19 @@ public class OpenAIServiceImpl implements AIService {
 
   @Override
   public String askQuestion(String question) {
-    final ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), "Act as a history teacher");
-    
+    final ChatMessage systemMessage =
+        new ChatMessage(ChatMessageRole.SYSTEM.value(), "Act as a history teacher");
+
     /**
      * 
      * Tasks to finish:
-     *  - Create a list of messages to keep history, with their roles (gpt answers (assistant), human (user), 
-     *  - Create a !chatgptrole command to set the role (System message act as a XYZ)
-     *  - Create a command !chatgptpurge to purge the history and start over
-     *  - Create an Audio command
-     * 
-     * 
-     * 
+     * - Create a list of messages to keep history, with their roles (gpt answers (assistant), human (user)
+     * - Create a !chatgptrole command to set the role (System message act as a XYZ)
+     * - Create a command !chatgptpurge to purge the history and start over
+     * - Create an Audio command
      */
-    
-    
+
+
     final ChatMessage userMessage = new ChatMessage(ChatMessageRole.USER.value(), question);
     final List<ChatMessage> allMessages = Arrays.asList(systemMessage, userMessage);
     ChatCompletionRequest chatCompletionRequest =
@@ -71,7 +68,7 @@ public class OpenAIServiceImpl implements AIService {
           .collect(Collectors.joining());
       return responseMessages;
     } catch (RuntimeException e) {
-      final String timeoutMessage = "Could not get an answer, timed out!";
+      final String timeoutMessage = "Could not get an answer, timed out! :snail:";
       log.error(timeoutMessage, e);
       return timeoutMessage;
     }
