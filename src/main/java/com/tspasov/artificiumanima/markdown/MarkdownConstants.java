@@ -1,4 +1,4 @@
-package com.tspasov.artificiumanima.commands.discord;
+package com.tspasov.artificiumanima.markdown;
 
 public class MarkdownConstants {
 

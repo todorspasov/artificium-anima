@@ -3,7 +3,7 @@ package com.tspasov.artificiumanima.commands.openai;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.tspasov.artificiumanima.commands.Command;
-import com.tspasov.artificiumanima.commands.discord.MarkdownConstants;
+import com.tspasov.artificiumanima.markdown.MarkdownConstants;
 import com.tspasov.artificiumanima.service.AIService;
 import net.dv8tion.jda.api.entities.Message;
 
