@@ -11,14 +11,14 @@ public class TokenServiceImpl implements TokenService {
   private final String discordBotToken;
 
   @Autowired
-  public TokenServiceImpl(@Value("${gpt.token}") String gptToken,
+  public TokenServiceImpl(@Value("${openai.token}") String gptToken,
       @Value("${discord.bot.token}") String discordBotToken) {
     this.gptToken = gptToken;
     this.discordBotToken = discordBotToken;
   }
 
   @Override
-  public String getGptToken() {
+  public String getOpenAiToken() {
     return this.gptToken;
   }
 

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import com.summerschool.artificiumanima.service.AIService;
+import com.summerschool.artificiumanima.service.AiService;
 import com.summerschool.artificiumanima.service.tokens.TokenService;
 import com.theokanning.openai.audio.CreateTranscriptionRequest;
 import com.theokanning.openai.audio.TranscriptionResult;
@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class OpenAIServiceImpl implements AIService {
+public class OpenAiServiceImpl implements AiService {
 
   private static final String GPT_3_5_ENGINE = "gpt-3.5-turbo-16k";
   private static final String TRANSCRIPTION_ENGINE = "whisper-1";
@@ -39,9 +39,9 @@ public class OpenAIServiceImpl implements AIService {
   private final String selectedEngine;
 
   @Autowired
-  public OpenAIServiceImpl(TokenService tokenService,
+  public OpenAiServiceImpl(TokenService tokenService,
       @Value("${openai.engine:" + GPT_3_5_ENGINE + "}") String selectedEngine) {
-    this.openAiService = new OpenAiService(tokenService.getGptToken());
+    this.openAiService = new OpenAiService(tokenService.getOpenAiToken());
     this.selectedEngine = selectedEngine;
   }
 

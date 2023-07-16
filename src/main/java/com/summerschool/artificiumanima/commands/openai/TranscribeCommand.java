@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import com.summerschool.artificiumanima.commands.Command;
 import com.summerschool.artificiumanima.markdown.MarkdownConstants;
-import com.summerschool.artificiumanima.service.AIService;
+import com.summerschool.artificiumanima.service.AiService;
 import com.summerschool.artificiumanima.service.ChatBotService;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Message;
@@ -31,11 +31,11 @@ public class TranscribeCommand implements Command<Message> {
       String.format(MarkdownConstants.BOLD_TEXT_FORMAT,
           "The Artificial Oracle heard the following:") + System.lineSeparator();
 
-  private final AIService aiService;
+  private final AiService aiService;
   private final ChatBotService<AudioChannel, Message> discordService;
 
   @Autowired
-  public TranscribeCommand(AIService aiService,
+  public TranscribeCommand(AiService aiService,
       @Lazy ChatBotService<AudioChannel, Message> discordService) {
     this.aiService = aiService;
     this.discordService = discordService;

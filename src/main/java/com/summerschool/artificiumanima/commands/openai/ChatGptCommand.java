@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.summerschool.artificiumanima.commands.Command;
 import com.summerschool.artificiumanima.markdown.MarkdownConstants;
-import com.summerschool.artificiumanima.service.AIService;
+import com.summerschool.artificiumanima.service.AiService;
 import net.dv8tion.jda.api.entities.Message;
 
 @Component
@@ -17,10 +17,10 @@ public class ChatGptCommand implements Command<Message> {
       String.format(MarkdownConstants.BOLD_TEXT_FORMAT,
           "Artificial Oracle :desktop: :brain: answered: ") + "%s";
 
-  private final AIService aiService;
+  private final AiService aiService;
 
   @Autowired
-  public ChatGptCommand(AIService aiService) {
+  public ChatGptCommand(AiService aiService) {
     this.aiService = aiService;
   }
 

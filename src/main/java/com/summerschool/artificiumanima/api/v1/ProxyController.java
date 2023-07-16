@@ -4,16 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import com.summerschool.artificiumanima.service.AIService;
+import com.summerschool.artificiumanima.service.AiService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
 public class ProxyController {
-  private AIService aiService;
+  private AiService aiService;
 
   @Autowired
-  public ProxyController(AIService aiService) {
+  public ProxyController(AiService aiService) {
     this.aiService = aiService;
   }
 

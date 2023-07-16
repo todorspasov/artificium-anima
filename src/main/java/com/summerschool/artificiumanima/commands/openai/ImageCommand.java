@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.summerschool.artificiumanima.commands.Command;
 import com.summerschool.artificiumanima.markdown.MarkdownConstants;
-import com.summerschool.artificiumanima.service.AIService;
+import com.summerschool.artificiumanima.service.AiService;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Message;
 
@@ -24,10 +24,10 @@ public class ImageCommand implements Command<Message> {
           "Artificial Oracle :desktop: :brain: created image(s): :frame_photo:")
           + System.lineSeparator() + "%s";
 
-  private final AIService aiService;
+  private final AiService aiService;
 
   @Autowired
-  public ImageCommand(AIService aiService) {
+  public ImageCommand(AiService aiService) {
     this.aiService = aiService;
   }
 

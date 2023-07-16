@@ -11,12 +11,14 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.summerschool.artificiumanima.service.AudioPlayerService;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.managers.AudioManager;
 
+@Slf4j
 @Component
 public class LavaPlayerService implements AudioPlayerService<Message> {
   private final AudioPlayerManager playerManager;
@@ -47,6 +49,7 @@ public class LavaPlayerService implements AudioPlayerService<Message> {
     playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
       @Override
       public void trackLoaded(AudioTrack track) {
+        log.info("Adding to queue {}", track.getInfo().title);
         channel.sendMessage("Adding to queue " + track.getInfo().title).queue();
 
         play(message.getGuild(), musicManager, track);
@@ -60,6 +63,8 @@ public class LavaPlayerService implements AudioPlayerService<Message> {
           firstTrack = playlist.getTracks().get(0);
         }
 
+        log.info("Adding to queue {} (first track of playlist {})", firstTrack.getInfo().title,
+            playlist.getName());
         channel.sendMessage("Adding to queue " + firstTrack.getInfo().title
             + " (first track of playlist " + playlist.getName() + ")").queue();
 
@@ -68,11 +73,13 @@ public class LavaPlayerService implements AudioPlayerService<Message> {
 
       @Override
       public void noMatches() {
+        log.warn("Nothing found by {}", trackUrl);
         channel.sendMessage("Nothing found by " + trackUrl).queue();
       }
 
       @Override
       public void loadFailed(FriendlyException exception) {
+        log.error("Could not play.", exception);
         channel.sendMessage("Could not play: " + exception.getMessage()).queue();
       }
     });
@@ -83,6 +90,7 @@ public class LavaPlayerService implements AudioPlayerService<Message> {
     GuildMusicManager musicManager = getGuildAudioPlayer(message.getGuild());
     musicManager.scheduler.nextTrack();
 
+    log.info("Skipped to next track.");
     message.getChannel().sendMessage("Skipped to next track.").queue();
   }
 
