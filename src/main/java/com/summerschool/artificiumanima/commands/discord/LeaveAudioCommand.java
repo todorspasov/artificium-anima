@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 @Component
 public class LeaveAudioCommand implements Command<Message> {
 
-  private static final String LEAVE_AUDIO_COMMAND_KEY = "!leave";
+  private static final String LEAVE_AUDIO_COMMAND_KEY = "!leave-audio";
   private static final String LEAVE_AUDIO_COMMAND_INFO =
       "Ask the Artificial Oracle to leave voice channels";
 

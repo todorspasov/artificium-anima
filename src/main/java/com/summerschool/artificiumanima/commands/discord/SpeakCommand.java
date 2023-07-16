@@ -47,7 +47,7 @@ public class SpeakCommand implements Command<Message> {
       if (audioPath != null) {
         message.getChannel()
             .sendMessage(String.format(SPEAKING_MESSAGE_FORMAT, audioChannel.getName())).queue();
-        this.discordService.speak(audioPath, audioChannel);
+        this.discordService.speak(audioPath, audioChannel, message);
       } else {
         message.getChannel().sendMessage(CANNOT_SPEAK_ERROR).queue();
       }

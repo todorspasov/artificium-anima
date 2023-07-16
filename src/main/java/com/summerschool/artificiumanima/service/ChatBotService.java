@@ -18,5 +18,5 @@ public interface ChatBotService<C, M> {
 
   void leaveAudio(M message);
 
-  void speak(Path audioPath, C audioChannel);
+  void speak(Path audioPath, C audioChannel, M message);
 }

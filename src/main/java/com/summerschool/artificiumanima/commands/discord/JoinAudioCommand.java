@@ -12,9 +12,9 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
 @Slf4j
 @Component
-public class AudioCommand implements Command<Message> {
+public class JoinAudioCommand implements Command<Message> {
 
-  private static final String AUDIO_COMMAND_KEY = "!audio";
+  private static final String AUDIO_COMMAND_KEY = "!join-audio";
   private static final String AUDIO_COMMAND_INFO =
       "Ask the Artificial Oracle to listen to voice channel";
   private static final String AUDIO_COMMAND_REPLY_FORMAT =
@@ -25,7 +25,7 @@ public class AudioCommand implements Command<Message> {
   private final ChatBotService<AudioChannel, Message> discordService;
 
   @Autowired
-  public AudioCommand(@Lazy ChatBotService<AudioChannel, Message> discordService) {
+  public JoinAudioCommand(@Lazy ChatBotService<AudioChannel, Message> discordService) {
     this.discordService = discordService;
   }
 

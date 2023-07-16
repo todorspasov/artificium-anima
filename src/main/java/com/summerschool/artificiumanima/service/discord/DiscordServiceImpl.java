@@ -4,8 +4,10 @@ import java.nio.file.Path;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import com.summerschool.artificiumanima.markdown.MarkdownConstants;
+import com.summerschool.artificiumanima.service.AudioPlayerService;
 import com.summerschool.artificiumanima.service.ChatBotService;
 import com.summerschool.artificiumanima.service.discord.handlers.DiscordAudioReceiveHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -37,13 +39,16 @@ public class DiscordServiceImpl implements ChatBotService<AudioChannel, Message>
 
   private final DiscordBotFactory botFactory;
   private final DiscordAudioReceiveHandler discordAudioHandler;
+  private final AudioPlayerService<Message> audioPlayerService;
   private JDA discordBot;
 
   @Autowired
   public DiscordServiceImpl(@Value("${connect.bot.on.startup:true}") boolean connectBotOnStartup,
-      DiscordBotFactory botFactory, DiscordAudioReceiveHandler discordAudioHandler) {
+      DiscordBotFactory botFactory, DiscordAudioReceiveHandler discordAudioHandler,
+      @Lazy AudioPlayerService<Message> audioPlayerService) {
     this.botFactory = botFactory;
     this.discordAudioHandler = discordAudioHandler;
+    this.audioPlayerService = audioPlayerService;
     if (connectBotOnStartup) {
       log.info("Initializing discord bot at startup");
       initBot();
@@ -142,8 +147,7 @@ public class DiscordServiceImpl implements ChatBotService<AudioChannel, Message>
   }
 
   @Override
-  public void speak(Path audioPath, AudioChannel audioChannel) {
-    final AudioManager audioManager = audioChannel.getGuild().getAudioManager();
-    // TODO: FIXME: Start speaking the file
+  public void speak(Path audioPath, AudioChannel audioChannel, Message message) {
+    this.audioPlayerService.loadAndPlay(message, audioPath.toString());
   }
 }
