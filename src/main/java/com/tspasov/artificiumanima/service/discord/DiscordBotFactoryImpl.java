@@ -3,6 +3,7 @@ package com.tspasov.artificiumanima.service.discord;
 import java.util.EnumSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import com.tspasov.artificiumanima.service.discord.handlers.DiscordListener;
 import com.tspasov.artificiumanima.service.tokens.TokenService;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;

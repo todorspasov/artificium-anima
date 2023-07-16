@@ -1,7 +1,6 @@
 package com.tspasov.artificiumanima.commands.openai;
 
 import java.io.File;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -39,13 +38,11 @@ public class AudioCommand implements Command<Message> {
     log.info("Joining audio channel to create audio transcription. Args: {}", commandStr);
     final AudioChannel audioChannel = this.discordService.joinAudio(message);
     if (audioChannel != null) {
-      // https://medium.com/discord-bots/connecting-your-discord-bot-to-voice-channels-with-java-and-jda-403a9604e816
-      // TODO: FIXME: Transcribe what the bot hears in the next 5 seconds
-      // AudioReceiveHandler audioReceiveHandler = new AudioReceiveHandler() {};
-      // audioManager.setReceivingHandler(audioReceiveHandler);
+      // Record discord audio to a local file. Then transcribe it through the AI service
+      final File recordedFile = this.discordService.recordAudio(audioChannel);
 
-      final String response = StringUtils.isBlank(commandStr) ? ""
-          : this.aiService.transcribeAudio(new File(commandStr));
+      final String response =
+          recordedFile == null ? "" : this.aiService.transcribeAudio(recordedFile);
       message.getChannel()
           .sendMessage(String.format(AUDIO_COMMAND_REPLY_FORMAT, audioChannel.getName(), response))
           .queue();

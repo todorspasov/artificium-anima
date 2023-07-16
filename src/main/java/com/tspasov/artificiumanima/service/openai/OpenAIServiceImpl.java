@@ -51,13 +51,10 @@ public class OpenAIServiceImpl implements AIService {
 
     /**
      * 
-     * Tasks to finish:
-     * - Create a list of messages to keep history, with their roles (gpt answers (assistant), human (user)
-     * - Create a !chatgptrole command to set the role (System message act as a XYZ)
-     * - Create a command !chatgptpurge to purge the history and start over
-     * - Create an Audio command
+     * Tasks to finish: - Create a list of messages to keep history, with their roles (gpt answers
+     * (assistant), human (user) - Create a !chatgptrole command to set the role (System message act
+     * as a XYZ) - Create a command !chatgptpurge to purge the history and start over
      */
-
 
     final ChatMessage userMessage = new ChatMessage(ChatMessageRole.USER.value(), question);
     final List<ChatMessage> allMessages = Arrays.asList(systemMessage, userMessage);
@@ -85,14 +82,13 @@ public class OpenAIServiceImpl implements AIService {
     log.info("Image result: {}", imageResult.toString());
     return imageResult.getData().stream().map(Image::getUrl).collect(Collectors.toList());
   }
-  
+
   @Override
   public String transcribeAudio(File file) {
-    CreateTranscriptionRequest transcriptionRequest = CreateTranscriptionRequest.builder()
-        .language("en")
-        .model("whisper-1")
-        .build();
-    final TranscriptionResult transcription = this.openAiService.createTranscription(transcriptionRequest, file);
+    CreateTranscriptionRequest transcriptionRequest =
+        CreateTranscriptionRequest.builder().language("bg").model("whisper-1").build();
+    final TranscriptionResult transcription =
+        this.openAiService.createTranscription(transcriptionRequest, file);
     log.info("Got the following answer: {}", transcription.getText());
     return transcription.getText();
   }

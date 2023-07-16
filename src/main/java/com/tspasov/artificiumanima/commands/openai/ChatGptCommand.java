@@ -13,7 +13,8 @@ public class ChatGptCommand implements Command<Message> {
   private static final String CHATGPT_COMMAND_KEY = "!chatgpt";
   private static final String CHATGPT_COMMAND_INFO = "Ask the Artificial Oracle something";
   private static final String CHATGPT_COMMAND_REPLY_FORMAT =
-      String.format(MarkdownConstants.BOLD_TEXT_FORMAT, "Artificial Oracle :desktop: :brain: answered: ") + "%s";
+      String.format(MarkdownConstants.BOLD_TEXT_FORMAT,
+          "Artificial Oracle :desktop: :brain: answered: ") + "%s";
 
   private final AIService aiService;
 

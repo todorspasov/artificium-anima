@@ -1,9 +1,11 @@
 package com.tspasov.artificiumanima.service.discord;
 
+import java.io.File;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import com.tspasov.artificiumanima.markdown.MarkdownConstants;
+import com.tspasov.artificiumanima.service.discord.handlers.DiscordAudioHandler;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDA.Status;
@@ -25,7 +27,7 @@ public class DiscordServiceImpl implements DiscordService {
       String.format(MarkdownConstants.BOLD_TEXT_FORMAT, "%s cannot join voice channel %s! :mute:");
 
   private static final String JOINED_VOICE_CHANNEL_FORMAT =
-      String.format(MarkdownConstants.BOLD_TEXT_FORMAT, "%s joined voice channel %s! :loud_sound:");
+      String.format(MarkdownConstants.BOLD_TEXT_FORMAT, "%s joined voice channel %s!");
 
   private static final String LEFT_VOICE_CHANNEL_FORMAT =
       String.format(MarkdownConstants.BOLD_TEXT_FORMAT, "%s left voice channel %s! :loud_sound:");
@@ -109,5 +111,14 @@ public class DiscordServiceImpl implements DiscordService {
       message.getChannel().sendMessage(String.format(NO_VOICE_CHANNEL_FORMAT, selfUserName))
           .queue();
     }
+  }
+
+  @Override
+  public File recordAudio(AudioChannel audioChannel) {
+    final AudioManager audioManager = audioChannel.getGuild().getAudioManager();
+    final DiscordAudioHandler audioHandler = new DiscordAudioHandler();
+    audioManager.setReceivingHandler(audioHandler);
+    //TODO: FIXME: Finish generating the file from the receive handler
+    return new File(DiscordAudioHandler.AUDIO_FILE_PATH);
   }
 }

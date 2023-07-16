@@ -16,8 +16,9 @@ public class HelpCommand implements Command<Message> {
   private static final String HELP_COMMAND_KEY = "!help";
   private static final String HELP_COMMAND_INFO = "Get help on all available commands";
 
-  private static final String HELP_COMMAND_RESPONSE_FORMAT = MarkdownConstants.HEADER_3
-      + " :information_source: Here are all the available commands:" + System.lineSeparator() + "%s";
+  private static final String HELP_COMMAND_RESPONSE_FORMAT =
+      MarkdownConstants.HEADER_3 + " :information_source: Here are all the available commands:"
+          + System.lineSeparator() + "%s";
 
   private static final String COMMAND_FORMAT = MarkdownConstants.BULLET_LIST
       + MarkdownConstants.BOLD_TEXT_FORMAT + " -> " + MarkdownConstants.ITALICS_TEXT_FORMAT;
@@ -36,7 +37,8 @@ public class HelpCommand implements Command<Message> {
         CollectionUtils.emptyIfNull(commandRegistry.getCommandsInfo().entrySet()).stream()
             .map(e -> String.format(COMMAND_FORMAT, e.getKey(), e.getValue()))
             .collect(Collectors.joining(COMMANDS_SEPARATOR));
-    message.getChannel().sendMessage(String.format(HELP_COMMAND_RESPONSE_FORMAT, helpMessage)).queue();
+    message.getChannel().sendMessage(String.format(HELP_COMMAND_RESPONSE_FORMAT, helpMessage))
+        .queue();
   }
 
   @Override
