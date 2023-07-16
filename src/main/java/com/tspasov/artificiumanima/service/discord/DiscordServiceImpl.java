@@ -1,6 +1,7 @@
 package com.tspasov.artificiumanima.service.discord;
 
-import java.io.File;
+import java.nio.file.Path;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDA.Status;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.audio.AudioNatives;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Message;
@@ -33,12 +35,14 @@ public class DiscordServiceImpl implements DiscordService {
       String.format(MarkdownConstants.BOLD_TEXT_FORMAT, "%s left voice channel %s! :loud_sound:");
 
   private final DiscordBotFactory botFactory;
+  private final DiscordAudioHandler discordAudioHandler;
   private JDA discordBot;
 
   @Autowired
   public DiscordServiceImpl(@Value("${connect.bot.on.startup:true}") boolean connectBotOnStartup,
-      DiscordBotFactory botFactory) {
+      DiscordBotFactory botFactory, DiscordAudioHandler discordAudioHandler) {
     this.botFactory = botFactory;
+    this.discordAudioHandler = discordAudioHandler;
     if (connectBotOnStartup) {
       log.info("Initializing discord bot at startup");
       initBot();
@@ -49,6 +53,9 @@ public class DiscordServiceImpl implements DiscordService {
   public void initBot() {
     if (this.discordBot == null || this.discordBot.getStatus() == Status.SHUTDOWN) {
       this.discordBot = botFactory.createBot();
+      // Load native opus library
+      final boolean opusLoaded = AudioNatives.ensureOpus();
+      log.info("Opus library load status: {}", opusLoaded);
     }
   }
 
@@ -100,7 +107,8 @@ public class DiscordServiceImpl implements DiscordService {
     final String selfUserName = guild.getSelfMember().getUser().getName();
     if (voiceState != null && voiceState.getChannel() != null) {
       final String audioChannelName = voiceState.getChannel().getName();
-      // Leave the audio channel
+      stopRecordingAudio();
+      this.discordAudioHandler.clearUserFiles();
       final AudioManager audioManager = guild.getAudioManager();
       audioManager.closeAudioConnection();
       message.getChannel()
@@ -114,11 +122,19 @@ public class DiscordServiceImpl implements DiscordService {
   }
 
   @Override
-  public File recordAudio(AudioChannel audioChannel) {
+  public void startRecordingAudio(AudioChannel audioChannel) {
     final AudioManager audioManager = audioChannel.getGuild().getAudioManager();
-    final DiscordAudioHandler audioHandler = new DiscordAudioHandler();
-    audioManager.setReceivingHandler(audioHandler);
-    //TODO: FIXME: Finish generating the file from the receive handler
-    return new File(DiscordAudioHandler.AUDIO_FILE_PATH);
+    audioManager.setReceivingHandler(this.discordAudioHandler);
+    this.discordAudioHandler.startRecording();
+  }
+
+  @Override
+  public void stopRecordingAudio() {
+    this.discordAudioHandler.stopRecording();
+  }
+
+  @Override
+  public Map<String, Path> getRecordedAudio() {
+    return this.discordAudioHandler.getRecordedUserFiles();
   }
 }

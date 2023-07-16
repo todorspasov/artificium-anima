@@ -1,6 +1,7 @@
 package com.tspasov.artificiumanima.service.discord;
 
-import java.io.File;
+import java.nio.file.Path;
+import java.util.Map;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
@@ -12,7 +13,11 @@ public interface DiscordService {
 
   AudioChannel joinAudio(Message message);
 
-  File recordAudio(AudioChannel audioChannel);
+  void startRecordingAudio(AudioChannel audioChannel);
+
+  void stopRecordingAudio();
+
+  Map<String, Path> getRecordedAudio();
 
   void leaveAudio(Message message);
 

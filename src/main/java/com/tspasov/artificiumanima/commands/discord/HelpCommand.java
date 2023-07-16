@@ -14,10 +14,10 @@ import net.dv8tion.jda.api.entities.Message;
 public class HelpCommand implements Command<Message> {
 
   private static final String HELP_COMMAND_KEY = "!help";
-  private static final String HELP_COMMAND_INFO = "Get help on all available commands";
+  private static final String HELP_COMMAND_INFO = "Show available commands";
 
   private static final String HELP_COMMAND_RESPONSE_FORMAT =
-      MarkdownConstants.HEADER_3 + " :information_source: Here are all the available commands:"
+      MarkdownConstants.HEADER_3 + " :information_source: Here are the available commands:"
           + System.lineSeparator() + "%s";
 
   private static final String COMMAND_FORMAT = MarkdownConstants.BULLET_LIST

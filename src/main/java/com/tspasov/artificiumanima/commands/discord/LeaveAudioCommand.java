@@ -14,7 +14,7 @@ public class LeaveAudioCommand implements Command<Message> {
 
   private static final String LEAVE_AUDIO_COMMAND_KEY = "!leave";
   private static final String LEAVE_AUDIO_COMMAND_INFO =
-      "Ask the Artificial Oracle to leave all voice channels";
+      "Ask the Artificial Oracle to leave voice channels";
 
   private final DiscordService discordService;
 

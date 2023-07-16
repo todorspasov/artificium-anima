@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 public class OpenAIServiceImpl implements AIService {
 
   private static final String GPT_3_5_ENGINE = "gpt-3.5-turbo-16k";
+  private static final String TRANSCRIPTION_ENGINE = "whisper-1";
   private static final int MAX_TOKENS = 3 * 4000;
   private static final int CHAT_RESPONSE_COUNT = 1;
 
@@ -84,9 +85,9 @@ public class OpenAIServiceImpl implements AIService {
   }
 
   @Override
-  public String transcribeAudio(File file) {
+  public String transcribeAudio(File file, String language) {
     CreateTranscriptionRequest transcriptionRequest =
-        CreateTranscriptionRequest.builder().language("bg").model("whisper-1").build();
+        CreateTranscriptionRequest.builder().language(language).model(TRANSCRIPTION_ENGINE).build();
     final TranscriptionResult transcription =
         this.openAiService.createTranscription(transcriptionRequest, file);
     log.info("Got the following answer: {}", transcription.getText());

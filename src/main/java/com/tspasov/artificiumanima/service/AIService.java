@@ -8,5 +8,5 @@ public interface AIService {
 
   List<String> createImage(String text);
 
-  String transcribeAudio(File file);
+  String transcribeAudio(File file, String language);
 }

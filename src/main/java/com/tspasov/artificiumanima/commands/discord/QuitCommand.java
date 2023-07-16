@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.entities.Message;
 public class QuitCommand implements Command<Message> {
 
   private static final String QUIT_COMMAND_KEY = "!quit";
-  private static final String QUIT_COMMAND_INFO = "Ask the Artificial Oracle to disappear";
+  private static final String QUIT_COMMAND_INFO = "Ask the Artificial Oracle to disappear from discord";
 
   private final DiscordService discordService;
 
