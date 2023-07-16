@@ -2,8 +2,9 @@ package com.tspasov.artificiumanima;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {GroovyTemplateAutoConfiguration.class})
 public class ArtificiumAnimaApplication {
 
   public static void main(String[] args) {

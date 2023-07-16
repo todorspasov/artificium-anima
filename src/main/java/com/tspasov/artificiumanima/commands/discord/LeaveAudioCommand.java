@@ -4,9 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import com.tspasov.artificiumanima.commands.Command;
-import com.tspasov.artificiumanima.service.discord.DiscordService;
+import com.tspasov.artificiumanima.service.ChatBotService;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
 @Slf4j
 @Component
@@ -16,10 +17,10 @@ public class LeaveAudioCommand implements Command<Message> {
   private static final String LEAVE_AUDIO_COMMAND_INFO =
       "Ask the Artificial Oracle to leave voice channels";
 
-  private final DiscordService discordService;
+  private final ChatBotService<AudioChannel, Message> discordService;
 
   @Autowired
-  public LeaveAudioCommand(@Lazy DiscordService discordService) {
+  public LeaveAudioCommand(@Lazy ChatBotService<AudioChannel, Message> discordService) {
     this.discordService = discordService;
   }
 

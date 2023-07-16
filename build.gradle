@@ -20,6 +20,10 @@ configurations {
 
 repositories {
 	mavenCentral()
+    jcenter()
+  maven {
+    url 'https://m2.dv8tion.net/releases'
+  }
 }
 
 dependencies {
@@ -35,6 +39,15 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	implementation 'de.dfki.mary:voice-cmu-slt-hsmm:5.2.1', {
+      exclude group: 'com.twmacinta', module: 'fast-md5'
+      exclude group: 'gov.nist.math', module: 'Jampack'
+      exclude group: 'org.apache.logging.log4j', module: 'log4j-core'
+      exclude group: 'org.apache.logging.log4j', module: 'log4j-1.2-api'
+    }
+
+	implementation 'com.sedmelluq:lavaplayer:1.3.77'
 }
 
 tasks.named('test') {

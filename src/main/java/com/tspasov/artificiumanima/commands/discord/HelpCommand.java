@@ -16,9 +16,8 @@ public class HelpCommand implements Command<Message> {
   private static final String HELP_COMMAND_KEY = "!help";
   private static final String HELP_COMMAND_INFO = "Show available commands";
 
-  private static final String HELP_COMMAND_RESPONSE_FORMAT =
-      MarkdownConstants.HEADER_3 + " :information_source: Here are the available commands:"
-          + System.lineSeparator() + "%s";
+  private static final String HELP_COMMAND_RESPONSE_FORMAT = MarkdownConstants.HEADER_3
+      + " :information_source: Here are the available commands:" + System.lineSeparator() + "%s";
 
   private static final String COMMAND_FORMAT = MarkdownConstants.BULLET_LIST
       + MarkdownConstants.BOLD_TEXT_FORMAT + " -> " + MarkdownConstants.ITALICS_TEXT_FORMAT;

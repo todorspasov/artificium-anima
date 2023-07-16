@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import com.tspasov.artificiumanima.commands.Command;
 import com.tspasov.artificiumanima.markdown.MarkdownConstants;
-import com.tspasov.artificiumanima.service.discord.DiscordService;
+import com.tspasov.artificiumanima.service.ChatBotService;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
@@ -22,15 +22,16 @@ public class AudioCommand implements Command<Message> {
           "Artificial Oracle :desktop: :brain: listening to voice channel '%s': :ear:")
           + System.lineSeparator();
 
-  private final DiscordService discordService;
+  private final ChatBotService<AudioChannel, Message> discordService;
 
   @Autowired
-  public AudioCommand(@Lazy DiscordService discordService) {
+  public AudioCommand(@Lazy ChatBotService<AudioChannel, Message> discordService) {
     this.discordService = discordService;
   }
 
   @Override
   public void execute(String commandStr, Message message) {
+    message.getGuild();
     log.info("Joining audio channel to create audio transcription. Args: {}", commandStr);
     final AudioChannel audioChannel = this.discordService.joinAudio(message);
     if (audioChannel != null) {

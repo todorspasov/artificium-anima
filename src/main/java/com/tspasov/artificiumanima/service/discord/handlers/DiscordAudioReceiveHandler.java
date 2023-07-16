@@ -1,18 +1,16 @@
 package com.tspasov.artificiumanima.service.discord.handlers;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import com.tspasov.artificiumanima.audio.AudioHelper;
+import com.tspasov.artificiumanima.files.FileConstants;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
@@ -20,21 +18,20 @@ import net.dv8tion.jda.api.audio.UserAudio;
 
 @Slf4j
 @Component
-public class DiscordAudioHandler implements AudioReceiveHandler {
-
-  public static final Path AUDIO_FILES_PATH =
-      Paths.get("C:\\Users\\User\\Downloads\\discord-audio\\");
-  private static final String AUDIO_FILE_NAME_FORMAT = "%s.wav";
+public class DiscordAudioReceiveHandler implements AudioReceiveHandler {
 
   private static final int THRESHOLD_RECEIVE_SIZE = 100 * 1024 * 1024;
 
   private final Map<String, ByteArrayOutputStream> userByteStreams = new HashMap<>();
+  private final AudioHelper audioHelper;
 
   private boolean isRecording;
 
   private @Getter Map<String, Path> recordedUserFiles;
 
-  public DiscordAudioHandler() {
+  @Autowired
+  public DiscordAudioReceiveHandler(AudioHelper audioHelper) {
+    this.audioHelper = audioHelper;
     this.recordedUserFiles = new HashMap<>();
     this.isRecording = false;
   }
@@ -66,10 +63,9 @@ public class DiscordAudioHandler implements AudioReceiveHandler {
 
   private void persistUserRecording(final String speakerName,
       final ByteArrayOutputStream speakerByteStream) {
-    final File speakerFile =
-        AUDIO_FILES_PATH.resolve(String.format(AUDIO_FILE_NAME_FORMAT, speakerName)).toFile();
+    final File speakerFile = FileConstants.getAudioFilePath(speakerName).toFile();
     log.info("Writing audio file {} for user {}", speakerFile.getName(), speakerName);
-    writeStreamToFile(speakerByteStream, speakerFile);
+    this.audioHelper.writeStreamToFile(speakerByteStream, OUTPUT_FORMAT, speakerFile);
     this.recordedUserFiles.put(speakerName, speakerFile.toPath());
     speakerByteStream.reset();
   }
@@ -101,15 +97,5 @@ public class DiscordAudioHandler implements AudioReceiveHandler {
       }
     });
     this.recordedUserFiles.clear();
-  }
-
-  private static void writeStreamToFile(ByteArrayOutputStream byteOutputStream, File file) {
-    final byte[] byteArray = byteOutputStream.toByteArray();
-    try (AudioInputStream is = new AudioInputStream(new ByteArrayInputStream(byteArray),
-        OUTPUT_FORMAT, byteArray.length)) {
-      AudioSystem.write(is, AudioFileFormat.Type.WAVE, file);
-    } catch (IOException ex) {
-      log.error("Could not create audio file {}. Exception: {}", file.getName(), ex);
-    }
   }
 }

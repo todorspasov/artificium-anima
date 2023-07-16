@@ -6,7 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import com.tspasov.artificiumanima.markdown.MarkdownConstants;
-import com.tspasov.artificiumanima.service.discord.handlers.DiscordAudioHandler;
+import com.tspasov.artificiumanima.service.ChatBotService;
+import com.tspasov.artificiumanima.service.discord.handlers.DiscordAudioReceiveHandler;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDA.Status;
@@ -20,7 +21,7 @@ import net.dv8tion.jda.api.managers.AudioManager;
 
 @Component
 @Slf4j
-public class DiscordServiceImpl implements DiscordService {
+public class DiscordServiceImpl implements ChatBotService<AudioChannel, Message> {
 
   private static final String NO_VOICE_CHANNEL_FORMAT = String.format(
       MarkdownConstants.BOLD_TEXT_FORMAT, "User %s has not joined any voice channel! :mute:");
@@ -35,12 +36,12 @@ public class DiscordServiceImpl implements DiscordService {
       String.format(MarkdownConstants.BOLD_TEXT_FORMAT, "%s left voice channel %s! :loud_sound:");
 
   private final DiscordBotFactory botFactory;
-  private final DiscordAudioHandler discordAudioHandler;
+  private final DiscordAudioReceiveHandler discordAudioHandler;
   private JDA discordBot;
 
   @Autowired
   public DiscordServiceImpl(@Value("${connect.bot.on.startup:true}") boolean connectBotOnStartup,
-      DiscordBotFactory botFactory, DiscordAudioHandler discordAudioHandler) {
+      DiscordBotFactory botFactory, DiscordAudioReceiveHandler discordAudioHandler) {
     this.botFactory = botFactory;
     this.discordAudioHandler = discordAudioHandler;
     if (connectBotOnStartup) {
@@ -83,7 +84,9 @@ public class DiscordServiceImpl implements DiscordService {
       } else {
         // Join the audio channel if not already connected
         final AudioManager audioManager = guild.getAudioManager();
-        audioManager.openAudioConnection(audioChannel);
+        if (!audioManager.isConnected()) {
+          audioManager.openAudioConnection(audioChannel);
+        }
         message.getChannel()
             .sendMessage(
                 String.format(JOINED_VOICE_CHANNEL_FORMAT, selfUserName, audioChannel.getName()))
@@ -136,5 +139,11 @@ public class DiscordServiceImpl implements DiscordService {
   @Override
   public Map<String, Path> getRecordedAudio() {
     return this.discordAudioHandler.getRecordedUserFiles();
+  }
+
+  @Override
+  public void speak(Path audioPath, AudioChannel audioChannel) {
+    final AudioManager audioManager = audioChannel.getGuild().getAudioManager();
+    // TODO: FIXME: Start speaking the file
   }
 }

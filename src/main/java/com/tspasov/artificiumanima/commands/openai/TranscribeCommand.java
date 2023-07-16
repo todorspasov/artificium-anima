@@ -9,9 +9,10 @@ import org.springframework.stereotype.Component;
 import com.tspasov.artificiumanima.commands.Command;
 import com.tspasov.artificiumanima.markdown.MarkdownConstants;
 import com.tspasov.artificiumanima.service.AIService;
-import com.tspasov.artificiumanima.service.discord.DiscordService;
+import com.tspasov.artificiumanima.service.ChatBotService;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
 @Slf4j
 @Component
@@ -31,10 +32,11 @@ public class TranscribeCommand implements Command<Message> {
           "The Artificial Oracle heard the following:") + System.lineSeparator();
 
   private final AIService aiService;
-  private final DiscordService discordService;
+  private final ChatBotService<AudioChannel, Message> discordService;
 
   @Autowired
-  public TranscribeCommand(AIService aiService, @Lazy DiscordService discordService) {
+  public TranscribeCommand(AIService aiService,
+      @Lazy ChatBotService<AudioChannel, Message> discordService) {
     this.aiService = aiService;
     this.discordService = discordService;
   }

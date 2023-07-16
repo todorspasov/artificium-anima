@@ -19,7 +19,6 @@ public class DiscordListener extends ListenerAdapter {
     this.commandRegistry = commandRegistry;
   }
 
-
   @Override
   public void onMessageReceived(MessageReceivedEvent event) {
     final String contentRaw = event.getMessage().getContentRaw();
@@ -32,4 +31,5 @@ public class DiscordListener extends ListenerAdapter {
       log.info("Skipping processing message as it is from bot: {}", event.getAuthor().getName());
     }
   }
+
 }

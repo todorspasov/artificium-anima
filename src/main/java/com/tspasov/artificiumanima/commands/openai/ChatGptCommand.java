@@ -11,7 +11,8 @@ import net.dv8tion.jda.api.entities.Message;
 public class ChatGptCommand implements Command<Message> {
 
   private static final String CHATGPT_COMMAND_KEY = "!chatgpt";
-  private static final String CHATGPT_COMMAND_INFO = "Ask the Artificial Oracle something. Example: '!chatgpt what is the age of the Sun'";
+  private static final String CHATGPT_COMMAND_INFO =
+      "Ask the Artificial Oracle something. Example: '!chatgpt what is the age of the Sun'";
   private static final String CHATGPT_COMMAND_REPLY_FORMAT =
       String.format(MarkdownConstants.BOLD_TEXT_FORMAT,
           "Artificial Oracle :desktop: :brain: answered: ") + "%s";
