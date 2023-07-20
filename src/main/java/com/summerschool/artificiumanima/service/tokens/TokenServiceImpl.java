@@ -9,12 +9,15 @@ public class TokenServiceImpl implements TokenService {
 
   private final String gptToken;
   private final String discordBotToken;
+  private final String slackBotToken;
 
   @Autowired
   public TokenServiceImpl(@Value("${openai.token}") String gptToken,
-      @Value("${discord.bot.token}") String discordBotToken) {
+      @Value("${discord.bot.token}") String discordBotToken,
+      @Value("${slack.bot.token}") String slackBotToken) {
     this.gptToken = gptToken;
     this.discordBotToken = discordBotToken;
+    this.slackBotToken = slackBotToken;
   }
 
   @Override
@@ -27,4 +30,8 @@ public class TokenServiceImpl implements TokenService {
     return this.discordBotToken;
   }
 
+  @Override
+  public String getSlackBotToken() {
+    return this.slackBotToken;
+  }
 }

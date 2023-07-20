@@ -5,4 +5,6 @@ public interface TokenService {
   String getOpenAiToken();
 
   String getDiscordBotToken();
+  
+  String getSlackBotToken();
 }
