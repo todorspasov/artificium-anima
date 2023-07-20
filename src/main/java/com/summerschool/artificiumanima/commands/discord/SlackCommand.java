@@ -29,13 +29,14 @@ public class SlackCommand implements Command<Message> {
     final String discordUserName = message.getAuthor().getName();
     final String discordChannel = message.getChannel().getName();
     final String slackChannelId = this.slackService.getDefaultChannelId();
+    final String slackChannelName = this.slackService.getChannelName(slackChannelId);
     final String slackMessage =
         String.format(SLACK_MESSAGE_FORMAT, discordUserName, discordChannel, commandStr);
-    log.info("Sending message to top-secret slack channel: {}. Message: '{}'", slackChannelId,
-        discordUserName, slackMessage);
+    log.info(
+        "Sending message to top-secret slack channel with Id: '{}' and name: '#{}'. Message: '{}'",
+        slackChannelId, slackChannelName, discordUserName, slackMessage);
     final boolean isOK = this.slackService.sendMessage(slackMessage, slackChannelId);
     log.info("Message sent: {}", isOK);
-
   }
 
   @Override
