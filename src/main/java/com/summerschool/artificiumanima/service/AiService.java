@@ -4,7 +4,11 @@ import java.io.File;
 import java.util.List;
 
 public interface AiService {
-  String askQuestion(String question);
+  boolean setRole(String user, String roleMessage);
+
+  String askQuestion(String user, String question);
+
+  void forget(String user);
 
   List<String> createImage(String text);
 

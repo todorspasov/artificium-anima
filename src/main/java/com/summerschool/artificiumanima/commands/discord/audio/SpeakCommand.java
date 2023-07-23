@@ -1,10 +1,11 @@
-package com.summerschool.artificiumanima.commands.discord;
+package com.summerschool.artificiumanima.commands.discord.audio;
 
 import java.nio.file.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import com.summerschool.artificiumanima.commands.Command;
+import com.summerschool.artificiumanima.commands.CommandInfo;
 import com.summerschool.artificiumanima.service.ChatBotService;
 import com.summerschool.artificiumanima.service.TextToSpeechService;
 import com.summerschool.artificiumanima.utils.MarkdownConstants;
@@ -17,7 +18,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 public class SpeakCommand implements Command<Message> {
 
   private static final String SPEAK_COMMAND_KEY = "!speak";
-  private static final String SPEAK_COMMAND_INFO =
+  private static final String SPEAK_COMMAND_DESCRIPTION =
       "Ask the Artificial Oracle to speak. Argument: text to speak. Example: '!speak This is the National History Museum'";
 
   private static final String CANNOT_SPEAK_ERROR = String.format(MarkdownConstants.BOLD_TEXT_FORMAT,
@@ -56,12 +57,8 @@ public class SpeakCommand implements Command<Message> {
   }
 
   @Override
-  public String getCommandKey() {
-    return SPEAK_COMMAND_KEY;
-  }
-
-  @Override
-  public String getCommandInfo() {
-    return SPEAK_COMMAND_INFO;
+  public CommandInfo getCommandInfo() {
+    return CommandInfo.builder().commandKey(SPEAK_COMMAND_KEY)
+        .commandDescription(SPEAK_COMMAND_DESCRIPTION).commandGroup("Audio").build();
   }
 }

@@ -1,9 +1,10 @@
-package com.summerschool.artificiumanima.commands.discord;
+package com.summerschool.artificiumanima.commands.discord.audio;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import com.summerschool.artificiumanima.commands.Command;
+import com.summerschool.artificiumanima.commands.CommandInfo;
 import com.summerschool.artificiumanima.service.ChatBotService;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Message;
@@ -14,7 +15,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 public class LeaveAudioCommand implements Command<Message> {
 
   private static final String LEAVE_AUDIO_COMMAND_KEY = "!leave-audio";
-  private static final String LEAVE_AUDIO_COMMAND_INFO =
+  private static final String LEAVE_AUDIO_COMMAND_DESCRIPTION =
       "Ask the Artificial Oracle to leave voice channels";
 
   private final ChatBotService<AudioChannel, Message> chatService;
@@ -31,12 +32,8 @@ public class LeaveAudioCommand implements Command<Message> {
   }
 
   @Override
-  public String getCommandKey() {
-    return LEAVE_AUDIO_COMMAND_KEY;
-  }
-
-  @Override
-  public String getCommandInfo() {
-    return LEAVE_AUDIO_COMMAND_INFO;
+  public CommandInfo getCommandInfo() {
+    return CommandInfo.builder().commandKey(LEAVE_AUDIO_COMMAND_KEY)
+        .commandDescription(LEAVE_AUDIO_COMMAND_DESCRIPTION).commandGroup("Audio").build();
   }
 }

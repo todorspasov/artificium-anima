@@ -1,4 +1,4 @@
-package com.summerschool.artificiumanima.commands.openai;
+package com.summerschool.artificiumanima.commands.discord.openai;
 
 import java.nio.file.Path;
 import java.util.Map;
@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import com.summerschool.artificiumanima.commands.Command;
+import com.summerschool.artificiumanima.commands.CommandInfo;
 import com.summerschool.artificiumanima.service.AiService;
 import com.summerschool.artificiumanima.service.ChatBotService;
 import com.summerschool.artificiumanima.utils.MarkdownConstants;
@@ -19,7 +20,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 public class TranscribeCommand implements Command<Message> {
 
   private static final String TRANSCRIBE_COMMAND_KEY = "!transcribe";
-  private static final String TRANSCRIBE_COMMAND_INFO =
+  private static final String TRANSCRIBE_COMMAND_DESCRIPTION =
       "Ask the Artificial Oracle to write what it heard in the voice channel. Optional argument: language. Example: '!transcribe bg'";
 
   private static final String DEFAULT_LANGUAGE = "en";
@@ -58,12 +59,8 @@ public class TranscribeCommand implements Command<Message> {
   }
 
   @Override
-  public String getCommandKey() {
-    return TRANSCRIBE_COMMAND_KEY;
-  }
-
-  @Override
-  public String getCommandInfo() {
-    return TRANSCRIBE_COMMAND_INFO;
+  public CommandInfo getCommandInfo() {
+    return CommandInfo.builder().commandKey(TRANSCRIBE_COMMAND_KEY)
+        .commandDescription(TRANSCRIBE_COMMAND_DESCRIPTION).commandGroup("OpenAI").build();
   }
 }

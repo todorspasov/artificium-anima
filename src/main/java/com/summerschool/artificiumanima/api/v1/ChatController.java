@@ -9,11 +9,12 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-public class ProxyController {
+public class ChatController {
+
   private AiService aiService;
 
   @Autowired
-  public ProxyController(AiService aiService) {
+  public ChatController(AiService aiService) {
     this.aiService = aiService;
   }
 
@@ -21,8 +22,10 @@ public class ProxyController {
   public String hitGpt(@RequestBody String question) {
     // example question: "Create a piano chord progression in Dminor scale"
     log.info("Asking ChatGPT a question: {}", question);
-    final String answer = aiService.askQuestion(question);
+    final String user = ChatController.class.getSimpleName();
+    final String answer = aiService.askQuestion(user, question);
     log.info("Answer from ChatGPT: {}", answer);
+    aiService.forget(user);
     return answer;
   }
 

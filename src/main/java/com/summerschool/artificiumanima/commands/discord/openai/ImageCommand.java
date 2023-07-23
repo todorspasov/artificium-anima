@@ -1,4 +1,4 @@
-package com.summerschool.artificiumanima.commands.openai;
+package com.summerschool.artificiumanima.commands.discord.openai;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import com.summerschool.artificiumanima.commands.Command;
+import com.summerschool.artificiumanima.commands.CommandInfo;
 import com.summerschool.artificiumanima.service.AiService;
 import com.summerschool.artificiumanima.service.ChatBotService;
 import com.summerschool.artificiumanima.utils.MarkdownConstants;
@@ -20,7 +21,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 public class ImageCommand implements Command<Message> {
 
   private static final String IMAGE_COMMAND_KEY = "!image";
-  private static final String IMAGE_COMMAND_INFO =
+  private static final String IMAGE_COMMAND_DESCRIPTION =
       "Ask the Artificial Oracle to draw an image based on text. Example: '!image Create an image of a flying tomato hitting a flying ninja in the face'";
   private static final String IMAGE_COMMAND_REPLY_FORMAT =
       String.format(MarkdownConstants.BOLD_TEXT_FORMAT,
@@ -49,12 +50,8 @@ public class ImageCommand implements Command<Message> {
   }
 
   @Override
-  public String getCommandKey() {
-    return IMAGE_COMMAND_KEY;
-  }
-
-  @Override
-  public String getCommandInfo() {
-    return IMAGE_COMMAND_INFO;
+  public CommandInfo getCommandInfo() {
+    return CommandInfo.builder().commandKey(IMAGE_COMMAND_KEY)
+        .commandDescription(IMAGE_COMMAND_DESCRIPTION).commandGroup("OpenAI").build();
   }
 }

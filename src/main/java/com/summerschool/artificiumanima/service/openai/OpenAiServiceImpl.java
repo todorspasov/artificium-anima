@@ -1,10 +1,12 @@
 package com.summerschool.artificiumanima.service.openai;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,6 +16,7 @@ import com.theokanning.openai.audio.CreateTranscriptionRequest;
 import com.theokanning.openai.audio.TranscriptionResult;
 import com.theokanning.openai.completion.chat.ChatCompletionChoice;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
+import com.theokanning.openai.completion.chat.ChatCompletionResult;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.image.CreateImageRequest;
@@ -38,41 +41,54 @@ public class OpenAiServiceImpl implements AiService {
   private final OpenAiService openAiService;
   private final String selectedEngine;
 
+  private final Map<String, List<ChatMessage>> history;
+
   @Autowired
   public OpenAiServiceImpl(TokenService tokenService,
       @Value("${openai.engine:" + GPT_3_5_ENGINE + "}") String selectedEngine) {
+    this.history = new HashMap<>();
     this.openAiService = new OpenAiService(tokenService.getOpenAiToken());
     this.selectedEngine = selectedEngine;
   }
 
   @Override
-  public String askQuestion(String question) {
-    final ChatMessage systemMessage =
-        new ChatMessage(ChatMessageRole.SYSTEM.value(), "Act as a history teacher");
+  public boolean setRole(String user, String roleMessage) {
+    final ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), roleMessage);
+    addMessage(user, systemMessage);
+    // TODO: FIXME: Should we try and send the history to chatgpt?
+    return true;
+  }
 
-    /**
-     * 
-     * Tasks to finish: - Create a list of messages to keep history, with their roles (gpt answers
-     * (assistant), human (user) - Create a !chatgptrole command to set the role (System message act
-     * as a XYZ) - Create a command !chatgptpurge to purge the history and start over
-     */
+  @Override
+  public String askQuestion(String user, String question) {
 
     final ChatMessage userMessage = new ChatMessage(ChatMessageRole.USER.value(), question);
-    final List<ChatMessage> allMessages = Arrays.asList(systemMessage, userMessage);
+    addMessage(user, userMessage);
+    final List<ChatMessage> allMessages = getMessages(user);
     ChatCompletionRequest chatCompletionRequest =
         ChatCompletionRequest.builder().model(this.selectedEngine).messages(allMessages)
             .n(CHAT_RESPONSE_COUNT).maxTokens(MAX_TOKENS).logitBias(new HashMap<>()).build();
 
     try {
-      final String responseMessages = this.openAiService.createChatCompletion(chatCompletionRequest)
-          .getChoices().stream().map(ChatCompletionChoice::getMessage).map(ChatMessage::getContent)
+      final ChatCompletionResult chatCompletionResult =
+          this.openAiService.createChatCompletion(chatCompletionRequest);
+      final List<ChatMessage> responseChatMessages =
+          CollectionUtils.emptyIfNull(chatCompletionResult.getChoices()).stream()
+              .map(ChatCompletionChoice::getMessage).collect(Collectors.toList());
+      addMessages(user, responseChatMessages);
+
+      return responseChatMessages.stream().map(ChatMessage::getContent)
           .collect(Collectors.joining());
-      return responseMessages;
     } catch (RuntimeException e) {
       final String timeoutMessage = "Could not get an answer, timed out! :snail:";
       log.error(timeoutMessage, e);
       return timeoutMessage;
     }
+  }
+
+  @Override
+  public void forget(String user) {
+    history.remove(user);
   }
 
   @Override
@@ -92,5 +108,23 @@ public class OpenAiServiceImpl implements AiService {
         this.openAiService.createTranscription(transcriptionRequest, file);
     log.info("Got the following answer: {}", transcription.getText());
     return transcription.getText();
+  }
+
+  private List<ChatMessage> getMessages(String user) {
+    if (!history.containsKey(user)) {
+      history.put(user, new ArrayList<>());
+    }
+    return history.get(user);
+  }
+
+  private void addMessage(String user, ChatMessage chatMessage) {
+    if (!history.containsKey(user)) {
+      history.put(user, new ArrayList<>());
+    }
+    history.get(user).add(chatMessage);
+  }
+
+  private void addMessages(String user, List<ChatMessage> chatMessages) {
+    CollectionUtils.emptyIfNull(chatMessages).forEach(cm -> this.addMessage(user, cm));
   }
 }

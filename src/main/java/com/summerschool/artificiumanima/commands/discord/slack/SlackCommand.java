@@ -1,8 +1,9 @@
-package com.summerschool.artificiumanima.commands.discord;
+package com.summerschool.artificiumanima.commands.discord.slack;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.summerschool.artificiumanima.commands.Command;
+import com.summerschool.artificiumanima.commands.CommandInfo;
 import com.summerschool.artificiumanima.service.slack.SlackService;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Message;
@@ -12,7 +13,7 @@ import net.dv8tion.jda.api.entities.Message;
 public class SlackCommand implements Command<Message> {
 
   private static final String SLACK_COMMAND_KEY = "!slack";
-  private static final String SLACK_COMMAND_INFO =
+  private static final String SLACK_COMMAND_DESCRIPTION =
       "Send a command to a top secret slack channel. Example: '!slack Hello Mr. Anderson!'";
 
   private static final String SLACK_MESSAGE_FORMAT = "Discord user '%s' wrote in channel '%s': %s";
@@ -40,12 +41,8 @@ public class SlackCommand implements Command<Message> {
   }
 
   @Override
-  public String getCommandKey() {
-    return SLACK_COMMAND_KEY;
-  }
-
-  @Override
-  public String getCommandInfo() {
-    return SLACK_COMMAND_INFO;
+  public CommandInfo getCommandInfo() {
+    return CommandInfo.builder().commandKey(SLACK_COMMAND_KEY)
+        .commandDescription(SLACK_COMMAND_DESCRIPTION).commandGroup("Slack").build();
   }
 }

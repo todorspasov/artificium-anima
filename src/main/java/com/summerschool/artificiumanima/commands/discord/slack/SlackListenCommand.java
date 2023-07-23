@@ -1,4 +1,4 @@
-package com.summerschool.artificiumanima.commands.discord;
+package com.summerschool.artificiumanima.commands.discord.slack;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import com.summerschool.artificiumanima.commands.Command;
+import com.summerschool.artificiumanima.commands.CommandInfo;
 import com.summerschool.artificiumanima.service.ChatBotService;
 import com.summerschool.artificiumanima.service.slack.SlackService;
 import com.summerschool.artificiumanima.utils.MarkdownConstants;
@@ -18,7 +19,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 public class SlackListenCommand implements Command<Message> {
 
   private static final String SLACK_LISTEN_COMMAND_KEY = "!slack-listen";
-  private static final String SLACK_LISTEN_COMMAND_INFO =
+  private static final String SLACK_LISTEN_COMMAND_DESCRIPTION =
       "Listen to what top secret agents are writing in a top secret slack channel. No arguments needed. Example: '!slack-listen'";
 
   private static final String LISTEN_RESPONSE_FORMAT = MarkdownConstants.HEADER_2
@@ -49,12 +50,8 @@ public class SlackListenCommand implements Command<Message> {
   }
 
   @Override
-  public String getCommandKey() {
-    return SLACK_LISTEN_COMMAND_KEY;
-  }
-
-  @Override
-  public String getCommandInfo() {
-    return SLACK_LISTEN_COMMAND_INFO;
+  public CommandInfo getCommandInfo() {
+    return CommandInfo.builder().commandKey(SLACK_LISTEN_COMMAND_KEY)
+        .commandDescription(SLACK_LISTEN_COMMAND_DESCRIPTION).commandGroup("Slack").build();
   }
 }

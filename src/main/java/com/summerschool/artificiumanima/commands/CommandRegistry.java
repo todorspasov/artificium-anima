@@ -1,6 +1,6 @@
 package com.summerschool.artificiumanima.commands;
 
-import java.util.Map;
+import java.util.List;
 
 public interface CommandRegistry<T> {
 
@@ -8,5 +8,5 @@ public interface CommandRegistry<T> {
 
   void onCommandReceived(String command, T message);
 
-  Map<String, String> getCommandsInfo();
+  List<CommandInfo> getCommandsInfo();
 }

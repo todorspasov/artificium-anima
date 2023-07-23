@@ -1,9 +1,10 @@
-package com.summerschool.artificiumanima.commands.discord;
+package com.summerschool.artificiumanima.commands.discord.audio;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import com.summerschool.artificiumanima.commands.Command;
+import com.summerschool.artificiumanima.commands.CommandInfo;
 import com.summerschool.artificiumanima.service.AudioPlayerService;
 import com.summerschool.artificiumanima.service.ChatBotService;
 import lombok.extern.slf4j.Slf4j;
@@ -12,17 +13,17 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
 @Slf4j
 @Component
-public class SkipAudioTrackCommand implements Command<Message> {
+public class PlayAudioCommand implements Command<Message> {
 
-  private static final String SKIP_AUDIO_TRACK_COMMAND_KEY = "!skip-audio-track";
-  private static final String SKIP_AUDIO_TRACK_COMMAND_INFO =
-      "Ask the Artificial Oracle to skip the current audio track (if one is playing)";
+  private static final String PLAY_AUDIO_COMMAND_KEY = "!play-audio";
+  private static final String PLAY_AUDIO_COMMAND_DESCRIPTION =
+      "Ask the Artificial Oracle to play a song in a voice channel";
 
   private final ChatBotService<AudioChannel, Message> chatService;
   private final AudioPlayerService<Message> audioPlayerService;
 
   @Autowired
-  public SkipAudioTrackCommand(@Lazy ChatBotService<AudioChannel, Message> chatService,
+  public PlayAudioCommand(@Lazy ChatBotService<AudioChannel, Message> chatService,
       AudioPlayerService<Message> audioPlayerService) {
     this.chatService = chatService;
     this.audioPlayerService = audioPlayerService;
@@ -30,20 +31,16 @@ public class SkipAudioTrackCommand implements Command<Message> {
 
   @Override
   public void execute(String commandStr, Message message) {
-    log.info("Skipping the currently playing audio track. Args: {}", commandStr);
+    log.info("Joining audio channel to play audio tracks. Args: {}", commandStr);
     final AudioChannel audioChannel = this.chatService.joinAudio(message);
     if (audioChannel != null) {
-      this.audioPlayerService.skipTrack(message);
+      this.audioPlayerService.loadAndPlay(message, commandStr);
     }
   }
 
   @Override
-  public String getCommandKey() {
-    return SKIP_AUDIO_TRACK_COMMAND_KEY;
-  }
-
-  @Override
-  public String getCommandInfo() {
-    return SKIP_AUDIO_TRACK_COMMAND_INFO;
+  public CommandInfo getCommandInfo() {
+    return CommandInfo.builder().commandKey(PLAY_AUDIO_COMMAND_KEY)
+        .commandDescription(PLAY_AUDIO_COMMAND_DESCRIPTION).commandGroup("Audio").build();
   }
 }

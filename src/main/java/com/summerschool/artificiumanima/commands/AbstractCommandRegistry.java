@@ -23,8 +23,9 @@ public class AbstractCommandRegistry<T> implements CommandRegistry<T> {
 
   @Override
   public void registerCommandAction(final Command<T> command) {
-    registry.putIfAbsent(command.getCommandKey(), new ArrayList<>());
-    registry.get(command.getCommandKey()).add(command);
+    final String commandKey = command.getCommandInfo().getCommandKey();
+    registry.putIfAbsent(commandKey, new ArrayList<>());
+    registry.get(commandKey).add(command);
   }
 
   @Override
@@ -46,10 +47,8 @@ public class AbstractCommandRegistry<T> implements CommandRegistry<T> {
   }
 
   @Override
-  public Map<String, String> getCommandsInfo() {
+  public List<CommandInfo> getCommandsInfo() {
     return CollectionUtils.emptyIfNull(registry.values()).stream().flatMap(List::stream)
-        .collect(Collectors.toMap(cmd -> cmd.getCommandKey(), cmd -> cmd.getCommandInfo(),
-            (l, r) -> String.join(". ", l, r)));
+        .map(Command::getCommandInfo).collect(Collectors.toList());
   }
-
 }
