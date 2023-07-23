@@ -7,8 +7,10 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import com.summerschool.artificiumanima.commands.Command;
 import com.summerschool.artificiumanima.commands.CommandRegistry;
-import com.summerschool.artificiumanima.markdown.MarkdownConstants;
+import com.summerschool.artificiumanima.service.ChatBotService;
+import com.summerschool.artificiumanima.utils.MarkdownConstants;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
 @Component
 public class HelpCommand implements Command<Message> {
@@ -24,20 +26,24 @@ public class HelpCommand implements Command<Message> {
   private static final String COMMANDS_SEPARATOR = System.lineSeparator();
 
   private final CommandRegistry<Message> commandRegistry;
+  private final ChatBotService<AudioChannel, Message> chatService;
+
 
   @Autowired
-  public HelpCommand(@Lazy CommandRegistry<Message> commandRegistry) {
+  public HelpCommand(@Lazy CommandRegistry<Message> commandRegistry,
+      @Lazy ChatBotService<AudioChannel, Message> chatService) {
     this.commandRegistry = commandRegistry;
+    this.chatService = chatService;
   }
 
   @Override
   public void execute(String commandStr, Message message) {
-    final String helpMessage =
+    final String commandsHelpInfo =
         CollectionUtils.emptyIfNull(commandRegistry.getCommandsInfo().entrySet()).stream()
             .map(e -> String.format(COMMAND_FORMAT, e.getKey(), e.getValue()))
             .collect(Collectors.joining(COMMANDS_SEPARATOR));
-    message.getChannel().sendMessage(String.format(HELP_COMMAND_RESPONSE_FORMAT, helpMessage))
-        .queue();
+    final String overallHelpMessage = String.format(HELP_COMMAND_RESPONSE_FORMAT, commandsHelpInfo);
+    this.chatService.sendMessage(overallHelpMessage, message);
   }
 
   @Override

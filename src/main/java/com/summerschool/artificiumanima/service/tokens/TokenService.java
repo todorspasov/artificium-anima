@@ -7,6 +7,6 @@ public interface TokenService {
   String getDiscordBotToken();
 
   String getSlackBotToken();
-  
+
   String getGooglePaLMToken();
 }

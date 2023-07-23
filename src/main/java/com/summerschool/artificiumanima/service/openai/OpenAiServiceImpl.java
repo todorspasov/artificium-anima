@@ -52,12 +52,9 @@ public class OpenAiServiceImpl implements AiService {
 
     /**
      * 
-     * Tasks to finish: 
-     *  - Create a list of messages to keep history, with their roles (gpt answers
-     * (assistant), human (user) 
-     *  - Create a !chatgptrole command to set the role (System message act
-     * as a XYZ)
-     *  - Create a command !chatgptpurge to purge the history and start over
+     * Tasks to finish: - Create a list of messages to keep history, with their roles (gpt answers
+     * (assistant), human (user) - Create a !chatgptrole command to set the role (System message act
+     * as a XYZ) - Create a command !chatgptpurge to purge the history and start over
      */
 
     final ChatMessage userMessage = new ChatMessage(ChatMessageRole.USER.value(), question);

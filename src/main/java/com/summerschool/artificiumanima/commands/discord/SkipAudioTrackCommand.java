@@ -18,20 +18,20 @@ public class SkipAudioTrackCommand implements Command<Message> {
   private static final String SKIP_AUDIO_TRACK_COMMAND_INFO =
       "Ask the Artificial Oracle to skip the current audio track (if one is playing)";
 
-  private final ChatBotService<AudioChannel, Message> discordService;
+  private final ChatBotService<AudioChannel, Message> chatService;
   private final AudioPlayerService<Message> audioPlayerService;
 
   @Autowired
-  public SkipAudioTrackCommand(@Lazy ChatBotService<AudioChannel, Message> discordService,
+  public SkipAudioTrackCommand(@Lazy ChatBotService<AudioChannel, Message> chatService,
       AudioPlayerService<Message> audioPlayerService) {
-    this.discordService = discordService;
+    this.chatService = chatService;
     this.audioPlayerService = audioPlayerService;
   }
 
   @Override
   public void execute(String commandStr, Message message) {
     log.info("Skipping the currently playing audio track. Args: {}", commandStr);
-    final AudioChannel audioChannel = this.discordService.joinAudio(message);
+    final AudioChannel audioChannel = this.chatService.joinAudio(message);
     if (audioChannel != null) {
       this.audioPlayerService.skipTrack(message);
     }

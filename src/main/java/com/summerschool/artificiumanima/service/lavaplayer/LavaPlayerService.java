@@ -2,6 +2,7 @@ package com.summerschool.artificiumanima.service.lavaplayer;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -10,12 +11,13 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.summerschool.artificiumanima.markdown.MarkdownConstants;
 import com.summerschool.artificiumanima.service.AudioPlayerService;
+import com.summerschool.artificiumanima.service.ChatBotService;
+import com.summerschool.artificiumanima.utils.MarkdownConstants;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
 @Slf4j
 @Component
@@ -42,7 +44,10 @@ public class LavaPlayerService implements AudioPlayerService<Message> {
   private static final String SKIPPED_SONG_MESSAGE =
       String.format(MarkdownConstants.BOLD_TEXT_FORMAT, "Skipped to next track :track_next:");
 
-  public LavaPlayerService() {
+  private final ChatBotService<AudioChannel, Message> chatService;
+
+  public LavaPlayerService(@Lazy ChatBotService<AudioChannel, Message> chatService) {
+    this.chatService = chatService;
     this.playerManager = new DefaultAudioPlayerManager();
     AudioSourceManagers.registerRemoteSources(playerManager);
     AudioSourceManagers.registerLocalSource(playerManager);
@@ -52,15 +57,14 @@ public class LavaPlayerService implements AudioPlayerService<Message> {
   @Override
   public void loadAndPlay(final Message message, final String trackUrl) {
     final GuildMusicManager musicManager = getGuildAudioPlayer(message.getGuild());
-    final MessageChannelUnion channel = message.getChannel();
 
     playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
       @Override
       public void trackLoaded(AudioTrack track) {
         log.info("Adding to queue {}", track.getInfo().title);
-        channel.sendMessage(String.format(ADDING_SONG_TO_QUEUE_MESSAGE, track.getInfo().title))
-            .queue();
-
+        final String addingSong =
+            String.format(ADDING_SONG_TO_QUEUE_MESSAGE, track.getInfo().title);
+        chatService.sendMessage(addingSong, message);
         play(message.getGuild(), musicManager, track);
       }
 
@@ -74,8 +78,9 @@ public class LavaPlayerService implements AudioPlayerService<Message> {
 
         log.info("Adding to queue {} (first track of playlist {})", firstTrack.getInfo().title,
             playlist.getName());
-        channel.sendMessage(String.format(ADDING_PLAYLIST_TO_QUEUE_MESSAGE,
-            firstTrack.getInfo().title, playlist.getName())).queue();
+        final String addingPlaylist = String.format(ADDING_PLAYLIST_TO_QUEUE_MESSAGE,
+            firstTrack.getInfo().title, playlist.getName());
+        chatService.sendMessage(addingPlaylist, message);
 
         play(message.getGuild(), musicManager, firstTrack);
       }
@@ -83,14 +88,16 @@ public class LavaPlayerService implements AudioPlayerService<Message> {
       @Override
       public void noMatches() {
         log.warn("Nothing found by {}", trackUrl);
-        channel.sendMessage(String.format(NOTHING_FOUND_MESSAGE_FORMAT, trackUrl)).queue();
+        final String nothingFound = String.format(NOTHING_FOUND_MESSAGE_FORMAT, trackUrl);
+        chatService.sendMessage(nothingFound, message);
       }
 
       @Override
       public void loadFailed(FriendlyException exception) {
         log.error("Could not play.", exception);
-        channel.sendMessage(String.format(COULD_NOT_PLAY_MESSAGE_FORMAT, exception.getMessage()))
-            .queue();
+        final String cannotPlay =
+            String.format(COULD_NOT_PLAY_MESSAGE_FORMAT, exception.getMessage());
+        chatService.sendMessage(cannotPlay, message);
       }
     });
   }
@@ -101,7 +108,7 @@ public class LavaPlayerService implements AudioPlayerService<Message> {
     musicManager.scheduler.nextTrack();
 
     log.info("Skipped to next track.");
-    message.getChannel().sendMessage(SKIPPED_SONG_MESSAGE).queue();
+    this.chatService.sendMessage(SKIPPED_SONG_MESSAGE, message);
   }
 
   private void play(Guild guild, GuildMusicManager musicManager, AudioTrack track) {

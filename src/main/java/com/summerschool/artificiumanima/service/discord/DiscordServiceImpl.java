@@ -1,15 +1,18 @@
 package com.summerschool.artificiumanima.service.discord;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import com.summerschool.artificiumanima.markdown.MarkdownConstants;
 import com.summerschool.artificiumanima.service.AudioPlayerService;
 import com.summerschool.artificiumanima.service.ChatBotService;
 import com.summerschool.artificiumanima.service.discord.handlers.DiscordAudioReceiveHandler;
+import com.summerschool.artificiumanima.utils.MarkdownConstants;
+import com.summerschool.artificiumanima.utils.TextHelper;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDA.Status;
@@ -24,6 +27,8 @@ import net.dv8tion.jda.api.managers.AudioManager;
 @Component
 @Slf4j
 public class DiscordServiceImpl implements ChatBotService<AudioChannel, Message> {
+
+  private static final int MAX_MESSAGE_SIZE = 2000;
 
   private static final String NO_VOICE_CHANNEL_FORMAT = String.format(
       MarkdownConstants.BOLD_TEXT_FORMAT, "User %s has not joined any voice channel! :mute:");
@@ -83,27 +88,26 @@ public class DiscordServiceImpl implements ChatBotService<AudioChannel, Message>
     if (voiceState != null && voiceState.getChannel() != null) {
       final AudioChannel audioChannel = voiceState.getChannel();
       if (!guild.getSelfMember().hasPermission(audioChannel, Permission.VOICE_CONNECT)) {
-        message.getChannel().sendMessage(
-            String.format(CANNOT_JOIN_VOICE_CHANNEL_FORMAT, selfUserName, audioChannel.getName()))
-            .queue();
+        final String couldNotJoin =
+            String.format(CANNOT_JOIN_VOICE_CHANNEL_FORMAT, selfUserName, audioChannel.getName());
+        sendMessage(couldNotJoin, message);
       } else {
         // Join the audio channel if not already connected
         final AudioManager audioManager = guild.getAudioManager();
         if (!audioManager.isConnected()) {
           audioManager.openAudioConnection(audioChannel);
         }
-        message.getChannel()
-            .sendMessage(
-                String.format(JOINED_VOICE_CHANNEL_FORMAT, selfUserName, audioChannel.getName()))
-            .queue();
+        final String joinedChannelResponse =
+            String.format(JOINED_VOICE_CHANNEL_FORMAT, selfUserName, audioChannel.getName());
+        sendMessage(joinedChannelResponse, message);
         result = audioChannel;
       }
     } else {
       log.info("The sender of the command {} has not joined any voice channel!",
           message.getAuthor().getName());
-      message.getChannel()
-          .sendMessage(String.format(NO_VOICE_CHANNEL_FORMAT, message.getAuthor().getName()))
-          .queue();
+      final String noUserVoiceChannel =
+          String.format(NO_VOICE_CHANNEL_FORMAT, message.getAuthor().getName());
+      sendMessage(noUserVoiceChannel, message);
     }
     return result;
   }
@@ -119,13 +123,13 @@ public class DiscordServiceImpl implements ChatBotService<AudioChannel, Message>
       this.discordAudioHandler.clearUserFiles();
       final AudioManager audioManager = guild.getAudioManager();
       audioManager.closeAudioConnection();
-      message.getChannel()
-          .sendMessage(String.format(LEFT_VOICE_CHANNEL_FORMAT, selfUserName, audioChannelName))
-          .queue();
+      final String leftVoiceChannel =
+          String.format(LEFT_VOICE_CHANNEL_FORMAT, selfUserName, audioChannelName);
+      sendMessage(leftVoiceChannel, message);
     } else {
       log.info("User {} has not joined any voice channel!", selfUserName);
-      message.getChannel().sendMessage(String.format(NO_VOICE_CHANNEL_FORMAT, selfUserName))
-          .queue();
+      final String noUserVoiceChannel = String.format(NO_VOICE_CHANNEL_FORMAT, selfUserName);
+      sendMessage(noUserVoiceChannel, message);
     }
   }
 
@@ -149,5 +153,12 @@ public class DiscordServiceImpl implements ChatBotService<AudioChannel, Message>
   @Override
   public void speak(Path audioPath, AudioChannel audioChannel, Message message) {
     this.audioPlayerService.loadAndPlay(message, audioPath.toString());
+  }
+
+  @Override
+  public void sendMessage(String text, Message message) {
+    final List<String> chunks = TextHelper.splitInChunks(text, MAX_MESSAGE_SIZE);
+    CollectionUtils.emptyIfNull(chunks).stream()
+        .forEach(x -> message.getChannel().sendMessage(x).queue());
   }
 }

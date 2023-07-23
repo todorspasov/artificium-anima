@@ -3,12 +3,15 @@ package com.summerschool.artificiumanima.commands.discord;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import com.summerschool.artificiumanima.commands.Command;
-import com.summerschool.artificiumanima.markdown.MarkdownConstants;
+import com.summerschool.artificiumanima.service.ChatBotService;
 import com.summerschool.artificiumanima.service.slack.SlackService;
+import com.summerschool.artificiumanima.utils.MarkdownConstants;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
 @Slf4j
 @Component
@@ -23,10 +26,13 @@ public class SlackListenCommand implements Command<Message> {
       .concat(System.lineSeparator()).concat("%s");
 
   private final SlackService slackService;
+  private final ChatBotService<AudioChannel, Message> chatService;
 
   @Autowired
-  public SlackListenCommand(SlackService slackService) {
+  public SlackListenCommand(SlackService slackService,
+      @Lazy ChatBotService<AudioChannel, Message> chatService) {
     this.slackService = slackService;
+    this.chatService = chatService;
   }
 
   @Override
@@ -36,9 +42,10 @@ public class SlackListenCommand implements Command<Message> {
     log.info("Listening to top-secret slack channel with id: '{}' and name '{}'.", slackChannelId,
         slackChannelName);
     final List<String> channelMessages = this.slackService.getChannelMessages(slackChannelId);
-    final String fullMessage =
+    final String combinedMessage =
         channelMessages.stream().collect(Collectors.joining(System.lineSeparator()));
-    message.getChannel().sendMessage(String.format(LISTEN_RESPONSE_FORMAT, fullMessage)).queue();
+    final String response = String.format(LISTEN_RESPONSE_FORMAT, combinedMessage);
+    this.chatService.sendMessage(response, message);
   }
 
   @Override

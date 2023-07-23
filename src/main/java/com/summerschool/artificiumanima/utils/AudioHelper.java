@@ -1,4 +1,4 @@
-package com.summerschool.artificiumanima.audio;
+package com.summerschool.artificiumanima.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

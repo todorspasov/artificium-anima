@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import com.summerschool.artificiumanima.commands.Command;
-import com.summerschool.artificiumanima.markdown.MarkdownConstants;
 import com.summerschool.artificiumanima.service.ChatBotService;
 import com.summerschool.artificiumanima.service.TextToSpeechService;
+import com.summerschool.artificiumanima.utils.MarkdownConstants;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
@@ -28,28 +28,29 @@ public class SpeakCommand implements Command<Message> {
           "Artificial Oracle :desktop: :brain: currently speaking in channel '%s': :loudspeaker:")
           + System.lineSeparator();
 
-  private final ChatBotService<AudioChannel, Message> discordService;
+  private final ChatBotService<AudioChannel, Message> chatService;
   private final TextToSpeechService textToSpeechService;
 
   @Autowired
-  public SpeakCommand(@Lazy ChatBotService<AudioChannel, Message> discordService,
+  public SpeakCommand(@Lazy ChatBotService<AudioChannel, Message> chatService,
       TextToSpeechService textToSpeechService) {
-    this.discordService = discordService;
+    this.chatService = chatService;
     this.textToSpeechService = textToSpeechService;
   }
 
   @Override
   public void execute(String commandStr, Message message) {
     log.info("Speaking the folowing text: {}", commandStr);
-    final AudioChannel audioChannel = this.discordService.joinAudio(message);
+    final AudioChannel audioChannel = this.chatService.joinAudio(message);
     if (audioChannel != null) {
       final Path audioPath = this.textToSpeechService.convertToSpeech(commandStr);
       if (audioPath != null) {
-        message.getChannel()
-            .sendMessage(String.format(SPEAKING_MESSAGE_FORMAT, audioChannel.getName())).queue();
-        this.discordService.speak(audioPath, audioChannel, message);
+        final String currentlySpeakingMessage =
+            String.format(SPEAKING_MESSAGE_FORMAT, audioChannel.getName());
+        this.chatService.sendMessage(currentlySpeakingMessage, message);
+        this.chatService.speak(audioPath, audioChannel, message);
       } else {
-        message.getChannel().sendMessage(CANNOT_SPEAK_ERROR).queue();
+        this.chatService.sendMessage(CANNOT_SPEAK_ERROR, message);
       }
     }
   }

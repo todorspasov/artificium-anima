@@ -1,4 +1,4 @@
-package com.summerschool.artificiumanima.files;
+package com.summerschool.artificiumanima.utils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

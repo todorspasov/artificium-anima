@@ -18,8 +18,8 @@ import com.slack.api.methods.response.auth.AuthTestResponse;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 import com.slack.api.methods.response.conversations.ConversationsHistoryResponse;
 import com.slack.api.methods.response.conversations.ConversationsInfoResponse;
-import com.summerschool.artificiumanima.markdown.MarkdownConstants;
 import com.summerschool.artificiumanima.service.tokens.TokenService;
+import com.summerschool.artificiumanima.utils.MarkdownConstants;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import com.summerschool.artificiumanima.commands.Command;
-import com.summerschool.artificiumanima.markdown.MarkdownConstants;
 import com.summerschool.artificiumanima.service.AiService;
 import com.summerschool.artificiumanima.service.ChatBotService;
+import com.summerschool.artificiumanima.utils.MarkdownConstants;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
@@ -32,26 +32,28 @@ public class TranscribeCommand implements Command<Message> {
           "The Artificial Oracle heard the following:") + System.lineSeparator();
 
   private final AiService aiService;
-  private final ChatBotService<AudioChannel, Message> discordService;
+  private final ChatBotService<AudioChannel, Message> chatService;
 
   @Autowired
   public TranscribeCommand(AiService aiService,
-      @Lazy ChatBotService<AudioChannel, Message> discordService) {
+      @Lazy ChatBotService<AudioChannel, Message> chatService) {
     this.aiService = aiService;
-    this.discordService = discordService;
+    this.chatService = chatService;
   }
 
   @Override
   public void execute(String commandStr, Message message) {
     log.info("Creating audio transcription. Args: {}", commandStr);
     final String language = StringUtils.isNotBlank(commandStr) ? commandStr : DEFAULT_LANGUAGE;
-    this.discordService.stopRecordingAudio();
-    final Map<String, Path> recordedAudio = this.discordService.getRecordedAudio();
-    message.getChannel().sendMessage(STARTED_TRANSCRIBING_MESSAGE).queue();
+    this.chatService.stopRecordingAudio();
+    final Map<String, Path> recordedAudio = this.chatService.getRecordedAudio();
+    this.chatService.sendMessage(STARTED_TRANSCRIBING_MESSAGE, message);
     recordedAudio.entrySet().stream().forEach(entry -> {
-      final String response = this.aiService.transcribeAudio(entry.getValue().toFile(), language);
-      message.getChannel()
-          .sendMessage(String.format(USER_TRANSCRIPTION_FORMAT, entry.getKey(), response)).queue();
+      final String transcription =
+          this.aiService.transcribeAudio(entry.getValue().toFile(), language);
+      final String chatResponse =
+          String.format(USER_TRANSCRIPTION_FORMAT, entry.getKey(), transcription);
+      this.chatService.sendMessage(chatResponse, message);
     });
   }
 

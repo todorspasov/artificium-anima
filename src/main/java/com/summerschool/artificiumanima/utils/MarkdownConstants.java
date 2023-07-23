@@ -1,4 +1,4 @@
-package com.summerschool.artificiumanima.markdown;
+package com.summerschool.artificiumanima.utils;
 
 public class MarkdownConstants {
 

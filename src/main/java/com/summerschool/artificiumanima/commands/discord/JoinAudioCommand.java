@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import com.summerschool.artificiumanima.commands.Command;
-import com.summerschool.artificiumanima.markdown.MarkdownConstants;
 import com.summerschool.artificiumanima.service.ChatBotService;
+import com.summerschool.artificiumanima.utils.MarkdownConstants;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
@@ -22,23 +22,24 @@ public class JoinAudioCommand implements Command<Message> {
           "Artificial Oracle :desktop: :brain: listening to voice channel '%s': :ear:")
           + System.lineSeparator();
 
-  private final ChatBotService<AudioChannel, Message> discordService;
+  private final ChatBotService<AudioChannel, Message> chatService;
 
   @Autowired
-  public JoinAudioCommand(@Lazy ChatBotService<AudioChannel, Message> discordService) {
-    this.discordService = discordService;
+  public JoinAudioCommand(@Lazy ChatBotService<AudioChannel, Message> chatService) {
+    this.chatService = chatService;
   }
 
   @Override
   public void execute(String commandStr, Message message) {
     message.getGuild();
     log.info("Joining audio channel to create audio transcription. Args: {}", commandStr);
-    final AudioChannel audioChannel = this.discordService.joinAudio(message);
+    final AudioChannel audioChannel = this.chatService.joinAudio(message);
     if (audioChannel != null) {
       // Record discord audio to a local file. Then transcribe it through the AI service
-      this.discordService.startRecordingAudio(audioChannel);
-      message.getChannel()
-          .sendMessage(String.format(AUDIO_COMMAND_REPLY_FORMAT, audioChannel.getName())).queue();
+      this.chatService.startRecordingAudio(audioChannel);
+      final String audioCommandReply =
+          String.format(AUDIO_COMMAND_REPLY_FORMAT, audioChannel.getName());
+      this.chatService.sendMessage(audioCommandReply, message);
     }
   }
 

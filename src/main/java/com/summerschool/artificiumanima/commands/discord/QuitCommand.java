@@ -17,17 +17,17 @@ public class QuitCommand implements Command<Message> {
   private static final String QUIT_COMMAND_INFO =
       "Ask the Artificial Oracle to disappear from discord";
 
-  private final ChatBotService<AudioChannel, Message> discordService;
+  private final ChatBotService<AudioChannel, Message> chatService;
 
   @Autowired
-  public QuitCommand(@Lazy ChatBotService<AudioChannel, Message> discordService) {
-    this.discordService = discordService;
+  public QuitCommand(@Lazy ChatBotService<AudioChannel, Message> chatService) {
+    this.chatService = chatService;
   }
 
   @Override
   public void execute(String commandStr, Message message) {
     log.info("Quitting discord. Args: {}", commandStr);
-    this.discordService.shutDownBot();
+    this.chatService.shutDownBot();
   }
 
   @Override

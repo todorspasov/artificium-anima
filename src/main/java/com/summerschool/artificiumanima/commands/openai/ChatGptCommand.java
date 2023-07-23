@@ -1,11 +1,14 @@
 package com.summerschool.artificiumanima.commands.openai;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import com.summerschool.artificiumanima.commands.Command;
-import com.summerschool.artificiumanima.markdown.MarkdownConstants;
 import com.summerschool.artificiumanima.service.AiService;
+import com.summerschool.artificiumanima.service.ChatBotService;
+import com.summerschool.artificiumanima.utils.MarkdownConstants;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
 @Component
 public class ChatGptCommand implements Command<Message> {
@@ -18,10 +21,13 @@ public class ChatGptCommand implements Command<Message> {
           "Artificial Oracle :desktop: :brain: answered: ") + "%s";
 
   private final AiService aiService;
+  private final ChatBotService<AudioChannel, Message> chatService;
 
   @Autowired
-  public ChatGptCommand(AiService aiService) {
+  public ChatGptCommand(AiService aiService,
+      @Lazy ChatBotService<AudioChannel, Message> chatService) {
     this.aiService = aiService;
+    this.chatService = chatService;
   }
 
   @Override
@@ -29,7 +35,8 @@ public class ChatGptCommand implements Command<Message> {
     // ask ChatGPT about the commandStr
     // get response, and then paste it in discord
     final String answer = aiService.askQuestion(commandStr);
-    message.getChannel().sendMessage(String.format(CHATGPT_COMMAND_REPLY_FORMAT, answer)).queue();
+    final String chatMessage = String.format(CHATGPT_COMMAND_REPLY_FORMAT, answer);
+    this.chatService.sendMessage(chatMessage, message);
   }
 
   @Override

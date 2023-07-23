@@ -18,20 +18,20 @@ public class PlayAudioCommand implements Command<Message> {
   private static final String PLAY_AUDIO_COMMAND_INFO =
       "Ask the Artificial Oracle to play a song in a voice channel";
 
-  private final ChatBotService<AudioChannel, Message> discordService;
+  private final ChatBotService<AudioChannel, Message> chatService;
   private final AudioPlayerService<Message> audioPlayerService;
 
   @Autowired
-  public PlayAudioCommand(@Lazy ChatBotService<AudioChannel, Message> discordService,
+  public PlayAudioCommand(@Lazy ChatBotService<AudioChannel, Message> chatService,
       AudioPlayerService<Message> audioPlayerService) {
-    this.discordService = discordService;
+    this.chatService = chatService;
     this.audioPlayerService = audioPlayerService;
   }
 
   @Override
   public void execute(String commandStr, Message message) {
     log.info("Joining audio channel to play audio tracks. Args: {}", commandStr);
-    final AudioChannel audioChannel = this.discordService.joinAudio(message);
+    final AudioChannel audioChannel = this.chatService.joinAudio(message);
     if (audioChannel != null) {
       this.audioPlayerService.loadAndPlay(message, commandStr);
     }
