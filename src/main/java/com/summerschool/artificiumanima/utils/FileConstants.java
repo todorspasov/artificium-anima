@@ -5,6 +5,8 @@ import java.nio.file.Paths;
 
 public class FileConstants {
 
+  private FileConstants() {}
+
   public static final Path AUDIO_FILES_PATH =
       Paths.get("C:\\Users\\User\\Downloads\\discord-audio\\");
 

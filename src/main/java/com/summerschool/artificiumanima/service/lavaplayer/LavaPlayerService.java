@@ -65,7 +65,7 @@ public class LavaPlayerService implements AudioPlayerService<Message> {
         final String addingSong =
             String.format(ADDING_SONG_TO_QUEUE_MESSAGE, track.getInfo().title);
         chatService.sendMessage(addingSong, message);
-        play(message.getGuild(), musicManager, track);
+        play(musicManager, track);
       }
 
       @Override
@@ -82,7 +82,7 @@ public class LavaPlayerService implements AudioPlayerService<Message> {
             firstTrack.getInfo().title, playlist.getName());
         chatService.sendMessage(addingPlaylist, message);
 
-        play(message.getGuild(), musicManager, firstTrack);
+        play(musicManager, firstTrack);
       }
 
       @Override
@@ -111,15 +111,13 @@ public class LavaPlayerService implements AudioPlayerService<Message> {
     this.chatService.sendMessage(SKIPPED_SONG_MESSAGE, message);
   }
 
-  private void play(Guild guild, GuildMusicManager musicManager, AudioTrack track) {
+  private void play(GuildMusicManager musicManager, AudioTrack track) {
     musicManager.scheduler.queue(track);
   }
 
   private synchronized GuildMusicManager getGuildAudioPlayer(Guild guild) {
     long guildId = Long.parseLong(guild.getId());
-    if (!musicManagers.containsKey(guildId)) {
-      musicManagers.put(guildId, new GuildMusicManager(playerManager));
-    }
+    musicManagers.computeIfAbsent(guildId, k -> new GuildMusicManager(playerManager));
     final GuildMusicManager musicManager = musicManagers.get(guildId);
     guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
 

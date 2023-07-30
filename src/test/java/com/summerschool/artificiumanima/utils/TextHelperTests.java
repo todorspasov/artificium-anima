@@ -6,7 +6,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TextHelperTests {
+class TextHelperTests {
 
   @BeforeEach
   void setUp() throws Exception {}
@@ -36,7 +36,7 @@ public class TextHelperTests {
   }
 
   @Test
-  public void testSplitInChunksCustomSize() {
+  void testSplitInChunksCustomSize() {
     final String text = "1112223334445";
     final List<String> chunks = TextHelper.splitInChunks(text, 3);
     assertNotNull(chunks);

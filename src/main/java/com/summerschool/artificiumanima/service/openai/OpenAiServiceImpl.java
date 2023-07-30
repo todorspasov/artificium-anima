@@ -1,16 +1,15 @@
 package com.summerschool.artificiumanima.service.openai;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-import com.summerschool.artificiumanima.service.AiService;
+import com.summerschool.artificiumanima.service.AbstractAiService;
 import com.summerschool.artificiumanima.service.tokens.TokenService;
 import com.theokanning.openai.audio.CreateTranscriptionRequest;
 import com.theokanning.openai.audio.TranscriptionResult;
@@ -27,7 +26,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class OpenAiServiceImpl implements AiService {
+@ConditionalOnProperty(name = "ai.service.connection", havingValue = "remote")
+public class OpenAiServiceImpl extends AbstractAiService<ChatMessage> {
 
   private static final String GPT_3_5_ENGINE = "gpt-3.5-turbo-16k";
   private static final String TRANSCRIPTION_ENGINE = "whisper-1";
@@ -41,21 +41,16 @@ public class OpenAiServiceImpl implements AiService {
   private final OpenAiService openAiService;
   private final String selectedEngine;
 
-  private final Map<String, List<ChatMessage>> history;
-
   @Autowired
   public OpenAiServiceImpl(TokenService tokenService,
       @Value("${openai.engine:" + GPT_3_5_ENGINE + "}") String selectedEngine) {
-    this.history = new HashMap<>();
     this.openAiService = new OpenAiService(tokenService.getOpenAiToken());
     this.selectedEngine = selectedEngine;
   }
 
   @Override
-  public boolean setRole(String user, String roleMessage) {
-    final ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), roleMessage);
-    addMessage(user, systemMessage);
-    return true;
+  protected ChatMessage getRoleMessage(String roleMessage) {
+    return new ChatMessage(ChatMessageRole.SYSTEM.value(), roleMessage);
   }
 
   @Override
@@ -73,7 +68,7 @@ public class OpenAiServiceImpl implements AiService {
           this.openAiService.createChatCompletion(chatCompletionRequest);
       final List<ChatMessage> responseChatMessages =
           CollectionUtils.emptyIfNull(chatCompletionResult.getChoices()).stream()
-              .map(ChatCompletionChoice::getMessage).collect(Collectors.toList());
+              .map(ChatCompletionChoice::getMessage).toList();
       addMessages(user, responseChatMessages);
 
       return responseChatMessages.stream().map(ChatMessage::getContent)
@@ -86,17 +81,12 @@ public class OpenAiServiceImpl implements AiService {
   }
 
   @Override
-  public void forget(String user) {
-    history.remove(user);
-  }
-
-  @Override
   public List<String> createImage(String text) {
     CreateImageRequest imageRequest = CreateImageRequest.builder().prompt(text)
         .responseFormat(IMAGE_FORMAT).size(IMAGE_SIZE).n(IMAGE_RESPONSE_COUNT).build();
     final ImageResult imageResult = this.openAiService.createImage(imageRequest);
     log.info("Image result: {}", imageResult.toString());
-    return imageResult.getData().stream().map(Image::getUrl).collect(Collectors.toList());
+    return imageResult.getData().stream().map(Image::getUrl).toList();
   }
 
   @Override
@@ -107,23 +97,5 @@ public class OpenAiServiceImpl implements AiService {
         this.openAiService.createTranscription(transcriptionRequest, file);
     log.info("Got the following answer: {}", transcription.getText());
     return transcription.getText();
-  }
-
-  private List<ChatMessage> getMessages(String user) {
-    if (!history.containsKey(user)) {
-      history.put(user, new ArrayList<>());
-    }
-    return history.get(user);
-  }
-
-  private void addMessage(String user, ChatMessage chatMessage) {
-    if (!history.containsKey(user)) {
-      history.put(user, new ArrayList<>());
-    }
-    history.get(user).add(chatMessage);
-  }
-
-  private void addMessages(String user, List<ChatMessage> chatMessages) {
-    CollectionUtils.emptyIfNull(chatMessages).forEach(cm -> this.addMessage(user, cm));
   }
 }

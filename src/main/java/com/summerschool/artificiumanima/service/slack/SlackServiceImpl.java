@@ -3,7 +3,6 @@ package com.summerschool.artificiumanima.service.slack;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -111,7 +110,7 @@ public class SlackServiceImpl implements SlackService {
         return response.getMessages().stream()
             .map(m -> String.format(HISTORY_MESSAGE_FORMAT,
                 m.getBotProfile() != null ? m.getBotProfile().getName() : m.getUser(), m.getText()))
-            .collect(Collectors.toList());
+            .toList();
       } else {
         log.error("Could not read channel messages. Error: {}", response.getError());
       }

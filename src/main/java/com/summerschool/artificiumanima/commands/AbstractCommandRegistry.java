@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +48,6 @@ public class AbstractCommandRegistry<T> implements CommandRegistry<T> {
   @Override
   public List<CommandInfo> getCommandsInfo() {
     return CollectionUtils.emptyIfNull(registry.values()).stream().flatMap(List::stream)
-        .map(Command::getCommandInfo).collect(Collectors.toList());
+        .map(Command::getCommandInfo).toList();
   }
 }

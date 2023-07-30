@@ -49,6 +49,8 @@ dependencies {
 	implementation 'com.sedmelluq:lavaplayer:1.3.77'
 	
 	implementation 'com.slack.api:slack-api-client:1.30.0'
+
+	implementation 'com.hexadevlabs:gpt4all-java-binding:1.1.5'
 }
 
 tasks.named('test') {

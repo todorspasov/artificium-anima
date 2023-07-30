@@ -10,4 +10,6 @@ public class MarkdownConstants {
   public static final String ITALICS_TEXT_FORMAT = "*%s*";
 
   public static final String BULLET_LIST = "- ";
+
+  private MarkdownConstants() {}
 }
