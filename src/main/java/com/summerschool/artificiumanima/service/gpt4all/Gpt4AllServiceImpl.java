@@ -10,6 +10,15 @@ import com.summerschool.artificiumanima.service.AbstractAiService;
 @Component
 @ConditionalOnProperty(name = "ai.service.connection", havingValue = "local")
 public class Gpt4AllServiceImpl extends AbstractAiService<String> {
+  
+  /**
+   * TODO: FIXME: Tasks to finish:
+   *  - auto-download openAI openAPI spec file
+   *  - auto-generate Java SDK binding
+   *  - consume the sdk by pointing it to localhost:4891
+   */
+  
+  
   @Override
   public String askQuestion(String user, String question) {
     return null;
