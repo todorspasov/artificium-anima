@@ -55,7 +55,6 @@ public class OpenAiServiceImpl implements AiService {
   public boolean setRole(String user, String roleMessage) {
     final ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), roleMessage);
     addMessage(user, systemMessage);
-    // TODO: FIXME: Should we try and send the history to chatgpt?
     return true;
   }
 
