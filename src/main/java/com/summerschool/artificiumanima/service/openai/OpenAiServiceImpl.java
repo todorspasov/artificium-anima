@@ -1,18 +1,19 @@
 package com.summerschool.artificiumanima.service.openai;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import com.summerschool.artificiumanima.service.AbstractAiService;
 import com.summerschool.artificiumanima.service.tokens.TokenService;
 import com.theokanning.openai.audio.CreateTranscriptionRequest;
 import com.theokanning.openai.audio.TranscriptionResult;
+import com.theokanning.openai.client.OpenAiApi;
 import com.theokanning.openai.completion.chat.ChatCompletionChoice;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatCompletionResult;
@@ -23,12 +24,15 @@ import com.theokanning.openai.image.Image;
 import com.theokanning.openai.image.ImageResult;
 import com.theokanning.openai.service.OpenAiService;
 import lombok.extern.slf4j.Slf4j;
+import retrofit2.Retrofit;
 
 @Slf4j
 @Component
-@ConditionalOnProperty(name = "ai.service.connection", havingValue = "remote")
 public class OpenAiServiceImpl extends AbstractAiService<ChatMessage> {
 
+  private static final String BASE_URL = "https://api.openai.com/";
+  private static final String LOCAL_BASE_URL = "http://localhost:4891/";
+  private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(30);
   private static final String GPT_3_5_ENGINE = "gpt-3.5-turbo-16k";
   private static final String TRANSCRIPTION_ENGINE = "whisper-1";
   private static final int MAX_TOKENS = 3 * 4000;
@@ -38,13 +42,22 @@ public class OpenAiServiceImpl extends AbstractAiService<ChatMessage> {
   private static final String IMAGE_FORMAT = "url";
   private static final int IMAGE_RESPONSE_COUNT = 1;
 
+  private static final String REMOTE_CONNECTION = "remote";
+
   private final OpenAiService openAiService;
   private final String selectedEngine;
 
   @Autowired
   public OpenAiServiceImpl(TokenService tokenService,
-      @Value("${openai.engine:" + GPT_3_5_ENGINE + "}") String selectedEngine) {
-    this.openAiService = new OpenAiService(tokenService.getOpenAiToken());
+      @Value("${openai.engine:" + GPT_3_5_ENGINE + "}") String selectedEngine,
+      @Value("${ai.service.connection:remote}") String aiServiceConnection) {
+    final Retrofit retrofit = OpenAiService.defaultRetrofit(
+        OpenAiService.defaultClient(tokenService.getOpenAiToken(), DEFAULT_TIMEOUT),
+        OpenAiService.defaultObjectMapper());
+    this.openAiService = new OpenAiService(retrofit.newBuilder()
+        .baseUrl(
+            REMOTE_CONNECTION.equalsIgnoreCase(aiServiceConnection) ? BASE_URL : LOCAL_BASE_URL)
+        .build().create(OpenAiApi.class));
     this.selectedEngine = selectedEngine;
   }
 
